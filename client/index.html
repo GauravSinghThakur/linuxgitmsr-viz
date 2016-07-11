@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html data-ng-app="samples">
+<head>
+    <title>AngularJS Project on LinuxGitMsr</title>
+    <link href="Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="Content/bootstrap-responsive.min.css" rel="stylesheet" />
+    <link href="Content/styles.css" rel="stylesheet" />
+    
+    
+</head>
+<body data-ng-view>
+    <h2>
+        <img src="Content/images/angularShield.png" />ngularJS Project on LinuxGitMsr</h2>
+    <div class="row">
+        <div class="span4 section">
+            <h5>Mcidlinus Commits:</h5>
+            <ol>
+                <li data-ng-repeat="page in pages.commits">
+                    <a target="_blank" href="#/{{$index}}">{{page}}</a>
+                    <!--{{page}}-->
+                    
+                </li>
+            </ol>
+        </div>
+        <div class="span8">
+            <ng-include src="template"></ng-include>
+            <!-- <div id="sampleContent"></div> -->
+            <br />
+            <div class="container">
+                <h4>Search:</h4>
+                <textarea></textarea>
+            </div>
+        </div>
+    </div>
+
+    <script src="Scripts/jquery.min.js"></script>
+    <script src="Scripts/angular.js"></script>
+    <script src="Scripts/bootstrap.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.2.10/angular-route.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+
+    <script>
+    
+        //http://lepidllama.net/blog/how-to-push-an-existing-cloud9-project-to-github/
+        //*****************APP*******************
+        //var urlBase = '/DemoPartials/';
+        var samplesModule = angular.module('samples', ['ngRoute']);
+
+        // samplesModule.config(function($controllerProvider, $provide) {
+        //     //Used to handle loading controllers dynamically
+        //     samplesModule.controller = $controllerProvider.register;
+        //     samplesModule.factory = $provide.factory;
+        // });
+        
+        //*****************CONFIG*******************
+        samplesModule.config(function($routeProvider) {
+        $routeProvider.
+          when('/', {
+            templateUrl: 'index.html',
+            controller: 'samplesController'
+          }).
+          when('/:commitId', {
+            templateUrl: '/app/partials/commitInfo.html',
+            controller: 'samplesController'
+          }).
+          otherwise({
+            redirectTo: '/'
+          });
+      });
+      
+     
+
+        //*****************CONTROLLER*******************
+        samplesModule.controller('samplesController', function (commitsJson, $scope, $templateCache, $http, $location, $routeParams) {
+            
+            commitsJson.commits.success(function(cdata) {
+            $scope.pages = cdata; 
+            });
+            
+            $scope.commitId = $routeParams.commitId;
+            
+            Array.prototype.unique = function() {
+                var a = [];
+                for (var i=0, l=this.length; i<l; i++)
+                    if (a.indexOf(this[i]) === -1)
+                        a.push(this[i]);
+                return a;
+            };
+                        
+            commitsJson.commitInfo.success(function(data) {
+                var mcid = [];
+                mcid = data.commitInfo[$routeParams.commitId];
+                var cid = [];
+                var repo = [];
+                var comdate = [];
+                var mwhen = [];
+                var mcidlinus = [];
+                var i = 0;
+                while (mcid[i]){
+                    cid[i]= mcid[i].cid;
+                    mcidlinus[i] = mcid[i].mcidlinus;
+                    repo[i] = mcid[i].repo;
+                    comdate[i] = mcid[i].comdate;
+                    mwhen[i] = mcid[i].mwhen;
+                    i++;
+                }
+                cid[i] = mcidlinus[i-1];
+                repo[i] = "torvalds/linux";
+                comdate[i] = mwhen[i-1];
+                var repos = repo.unique();
+                var comdates = comdate.unique();
+                
+                $scope.cid = cid;
+                $scope.repo = repos;
+                $scope.comdate = comdates;
+                
+                $scope.tree = function (scope, element, attrs){
+                     var data = cid;
+                     console.log(cid,repos,comdates);
+                      var scale = d3.scale.ordinal()
+                        .domain(cid)   // Data space
+                        .rangeRoundPoints([0, 200]); // Pixel space
+                
+                      var svg = d3.select("body").append("svg")
+                        .attr("width",  250)
+                        .attr("height", 250);
+                
+                      svg.selectAll("rect")
+                          .data(data)
+                        .enter().append("rect")
+                          .attr("x", scale)
+                          .attr("y", 50)
+                          .attr("width",  20)
+                          .attr("height", 20);    
+             };
+            });
+            
+            
+            
+            $scope.func = function(){
+                for(var d in pages.commits){
+                    console.log(d);
+                }
+            };
+            
+            $scope.template = '';
+            $scope.html = '';
+            
+            
+            
+        });
+        
+          	
+            // samplesModule.factory('commitsInfo1Json', ['$http', function($http) { 
+            // return $http.get('/app/data/commitsInfo1.json') 
+            //     .success(function(data) { 
+            //       return data; 
+            //     }) 
+            //     .error(function(err) { 
+            //       return err; 
+            //     }); 
+            //*****************FACTORY*******************    
+            samplesModule.factory('commitsJson', ['$http', function($http) { 
+                return {
+                    commits: $http.get('/app/data/commits.json')
+                        .success(function(data) { 
+                            return data; 
+                        }) 
+                        .error(function(err) { 
+                              return err;
+                        }),
+                        
+                    commitInfo: $http.get('/app/data/commitInfo.json')
+                        .success(function(data) { 
+                            return data; 
+                        }) 
+                        .error(function(err) { 
+                              return err;
+                    })
+                };
+            }]); 
+                
+             //*****************DIRECTIVE*******************
+        
+        // samplesModule.directive("commitTree", function(commitsJson, $scope, $routeParams){
+        //   	function link(scope, element, attrs){
+        //          var data = [1, 2, 3, 4, 5];
+
+        //           var scale = d3.scale.linear()
+        //             .domain([1, 5])   // Data space
+        //             .range([0, 200]); // Pixel space
+            
+        //           var svg = d3.select("body").append("svg")
+        //             .attr("width",  250)
+        //             .attr("height", 250);
+            
+        //           svg.selectAll("rect")
+        //               .data(data)
+        //             .enter().append("rect")
+        //               .attr("x", function (d){ return scale(d); })
+        //               .attr("y", 50)
+        //               .attr("width",  20)
+        //               .attr("height", 20);    
+        //     }
+            
+        //   	return{
+        //       restrict: 'E',
+        //       scope: {},
+        //       //templateUrl: '/app/partials/commitInfo.html',
+        //       link: link
+        //   	};
+        // });	    
+                
+        
+    
+            // $scope.pages = 
+            // [
+            //     { title: 'Data binding basics', url: urlBase + '1_Data_binding_basics.html' },
+            //     { title: 'Looping with ng-repeat', url: urlBase + '2_Looping_with_ng-repeat.html' },
+            //     { title: 'Adding a Simple Controller', url: urlBase + '3_Adding_a_Simple_Controller.html' },
+            //     { title: 'Using ng-model and ng-click Directives', url: urlBase + '4_Using_ng-model_and_ng-click_Directives.html' },
+            //     { title: 'Filtering and Sorting Data', url: urlBase + '5_Filtering_and_Sorting_Data.html' },
+            //     { title: 'Adding a Module and Controller', url: urlBase + '6_Adding_a_Module_and_Controller.html' },
+            //     //{ title: 'Adding Module Configuration and Routing', url: urlBase + '7_Adding_Module_Configuration_and_Routing.html' },
+            //     { title: 'Module, Controller and Factory', url: urlBase + '8_Module-Controller-Factory.html' },
+            //     { title: 'Customer Management App', url: 'CustomerManagementApp.html', href: 'CustomerManagementApp.html' },
+            // ];
+            //  $scope.loadPage = function (page) {
+            // // //     if (page.href) {
+            // // //         document.location = page.href; //Load new page
+            // // //     }
+            // // //     $scope.template = page.url;
+            //     $http({ method: 'GET', url: '/', cache: $templateCache })
+            //       .success(function (html) {
+            //           $scope.html = html;
+            //           $('textarea').text(html); //Had to go with this due to IE
+            //       })
+            //       .error(function (html, status) {
+            //           $scope.html = 'Unable to load code: ' + status;
+            //       });
+            // }
+        
+           
+
+    </script>
+</body>
+</html>
