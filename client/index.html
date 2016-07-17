@@ -100,8 +100,8 @@
                     cid[i]= mcid[i].cid;
                     mcidlinus[i] = mcid[i].mcidlinus;
                     repo[i] = mcid[i].repo;
-                    comdate[i] = mcid[i].comdate;
-                    mwhen[i] = mcid[i].mwhen;
+                    comdate[i] = new Date(mcid[i].comdate);
+                    mwhen[i] = new Date(mcid[i].mwhen);
                     i++;
                 }
                 cid[i] = mcidlinus[i-1];
@@ -114,24 +114,91 @@
                 $scope.repo = repos;
                 $scope.comdate = comdates;
                 
+                var fields = Object.keys(mcid[0]);
+                var csv = mcid.map(function(row){
+                  return fields.map(function(fieldName){
+                    return JSON.stringify(row[fieldName] || '');
+                  });
+                });
+                csv.unshift(fields);
+                
+                
                 $scope.tree = function (scope, element, attrs){
-                     var data = cid;
-                     console.log(cid,repos,comdates);
-                      var scale = d3.scale.ordinal()
-                        .domain(cid)   // Data space
-                        .rangeRoundPoints([0, 200]); // Pixel space
+                      var outerWidth = 1200;
+                      var outerHeight = 700;
+                      var margin = { left: 350, top: 5, right: 5, bottom: 100 };
+                
+                      var xAxisLabelText = "Commit Time";
+                      var xAxisLabelOffset = 80;
+                
+                      var yAxisLabelText = "Repos";
+                      var yAxisLabelOffset = 300;
+                
+                      var innerWidth  = outerWidth  - margin.left - margin.right;
+                      var innerHeight = outerHeight - margin.top  - margin.bottom;
                 
                       var svg = d3.select("body").append("svg")
-                        .attr("width",  250)
-                        .attr("height", 250);
+                        .attr("width", outerWidth)
+                        .attr("height", outerHeight);
+                      var g = svg.append("g")
+                        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+                      var path = g.append("path")
+                        .attr("class", "chart-line");
                 
-                      svg.selectAll("rect")
-                          .data(data)
-                        .enter().append("rect")
-                          .attr("x", scale)
-                          .attr("y", 50)
-                          .attr("width",  20)
-                          .attr("height", 20);    
+                      var xAxisG = g.append("g")
+                        .attr("class", "x axis")
+                        .attr("transform", "translate(0," + innerHeight + ")")
+                      var xAxisLabel = xAxisG.append("text")
+                        .style("text-anchor", "middle")
+                        .attr("transform", "translate(" + (innerWidth / 2) + "," + xAxisLabelOffset + ")")
+                        .attr("class", "label")
+                        .text(xAxisLabelText);
+                
+                      var yAxisG = g.append("g")
+                        .attr("class", "y axis");
+                      var yAxisLabel = yAxisG.append("text")
+                        .style("text-anchor", "middle")
+                        .attr("transform", "translate(-" + yAxisLabelOffset + "," + (innerHeight / 2) + ") rotate(-90)")
+                        .attr("class", "label")
+                        .text(yAxisLabelText);
+                
+                      var xScale = d3.time.scale()
+                        .domain(d3.extent(comdates))
+                        .nice(d3.time.month)
+                        .range([0, innerWidth]);
+                      var yScale = d3.scale.ordinal()
+                        .domain(repos)
+                        .rangeRoundBands([0, innerHeight]);
+                
+
+                      var xAxis = d3.svg.axis().scale(xScale).orient("bottom")
+                        .ticks(5)
+                        //.tickFormat()
+                        .outerTickSize(0);
+                      var yAxis = d3.svg.axis().scale(yScale).orient("left")
+                        .ticks(10)
+                        //.tickFormat(d3.format("s"))
+                        .outerTickSize(0);
+                        
+                      console.log(cid,repos,comdates,csv);
+                      
+                      xAxisG.call(xAxis);
+                      yAxisG.call(yAxis);
+                    //   var xscale = d3.scale.ordinal()
+                    //     .domain(repos)   // Data space
+                    //     .rangeRoundPoints([0, 200]); // Pixel space
+                
+                    //   var svg = d3.select("body").append("svg")
+                    //     .attr("width",  250)
+                    //     .attr("height", 250);
+                
+                    //   svg.selectAll("rect")
+                    //       .data(repos)
+                    //     .enter().append("rect")
+                    //       .attr("x", xscale)
+                    //       .attr("y", 50)
+                    //       .attr("width",  20)
+                    //       .attr("height", 20);    
              };
             });
             
