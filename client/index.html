@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html data-ng-app="samples">
 <head>
-    <title>AngularJS Project on LinuxGitMsr</title>
+    <title>AngularJS Project for Visualizing Commit-Propagation into the Super-Repository of Linux</title>
     <link href="Content/bootstrap.min.css" rel="stylesheet" />
     <link href="Content/bootstrap-responsive.min.css" rel="stylesheet" />
     <link href="Content/styles.css" rel="stylesheet" />
@@ -10,7 +10,7 @@
 </head>
 <body ng-view>
     <h2>
-        <img src="Content/images/angularShield.png" />ngularJS Project on LinuxGitMsr</h2>
+        <img src="Content/images/angularShield.png" />ngularJS Project: Visualizing Commit-Propagation into --> The Super-Repository of Linux</h2>
     <div class="row">
         <div class="span4 section">
             <h5>Mcidlinus Commits:</h5>
@@ -214,9 +214,9 @@
                       xAxisG.call(xAxis);
                       yAxisG.call(yAxis);
                       
-                      //var bandSize = yScale.rangeRoundBands();
-                      
-                      console.log(repo,repos,comdate,yScale(repo[0]));
+                    var bandSize = yScale(repos[1])/2;
+                    
+                    console.log(bandSize,repos,comdate);
                       
                       var comLen = comdate.length;
                       var k = 0, l=0, nextInd=1;
@@ -224,7 +224,7 @@
                           if(mnextmerge.indexOf(cid[k])==-1){
                               g.append("circle")
                                  .attr("cx", xScale(comdate[k]))
-                                 .attr("cy", yScale(repo[k]))
+                                 .attr("cy", yScale(repo[k])+bandSize)
                                  .attr("stroke", colorScale(repo[k]))
                                  .attr("fill", "none")
                                  .attr("r", 10);
@@ -232,7 +232,7 @@
                           }else {
                               g.append("rect")
                                  .attr("x", xScale(comdate[k]))
-                                 .attr("y", yScale(repo[k]))
+                                 .attr("y", yScale(repo[k])+bandSize)
                                  .attr("width", 20)
                                  .attr("height", 20)
                                  .attr("stroke", "black")
@@ -243,12 +243,20 @@
                             nextInd = cid.indexOf(mnext[l]);
                                 g.append("line")
                                      .attr("x1", xScale(comdate[l]))
-                                     .attr("y1", yScale(repo[l]))
+                                     .attr("y1", yScale(repo[l])+bandSize)
                                      .attr("x2", xScale(comdate[nextInd]))
-                                     .attr("y2", yScale(repo[nextInd]))
+                                     .attr("y2", yScale(repo[nextInd])+bandSize)
                                      .attr("stroke", colorScale(repo[l]))
                                      .attr("stroke-width", 5);
                                 l++;
+                          }else {
+                              g.append("line")
+                                     .attr("x1", xScale(comdate[comLen-1]))
+                                     .attr("y1", yScale(repo[comLen-1])+bandSize)
+                                     .attr("x2", 0)
+                                     .attr("y2", yScale(repo[comLen-1])+bandSize)
+                                     .attr("stroke", colorScale(repo[comLen-1]))
+                                     .attr("stroke-width", 5);
                           }    
                       }
                    
