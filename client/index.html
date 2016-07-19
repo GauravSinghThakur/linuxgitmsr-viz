@@ -111,13 +111,14 @@
                 var mwhen = [];
                 var mcidlinus = [];
                 var mnextmerge = [];
+                var mnext = [];
                 var i = 0;
                 var len = mcid.length-1;
                 var repoOpp = [];
-                var rl = 0;
                 
                 while (mcid[i]){
                     mnextmerge[i] = mcid[i].mnextmerge;
+                    mnext[i] = mcid[i].mnext;
                     cid[i]= mcid[i].cid;
                     repo[i] = mcid[i].repo;
                     comdate[i] = new Date(mcid[i].comdate);
@@ -215,34 +216,42 @@
                       
                       //var bandSize = yScale.rangeRoundBands();
                       
-                      console.log(repo,repos,comdates,yScale(repo[0]));
+                      console.log(repo,repos,comdate,yScale(repo[0]));
                       
-                      var k = 0;
-                      while(comdate[k]){
-                          g.append("circle")
-                             .attr("cx", xScale(comdate[k]))
-                             .attr("cy", yScale(repo[k]))
-                             .attr("stroke", colorScale(repo[k]))
-                             .attr("fill", "none")
-                             .attr("r", 10);
-                             k++;
+                      var comLen = comdate.length;
+                      var k = 0, l=0, nextInd=1;
+                      while(k<comLen){
+                          if(mnextmerge.indexOf(cid[k])==-1){
+                              g.append("circle")
+                                 .attr("cx", xScale(comdate[k]))
+                                 .attr("cy", yScale(repo[k]))
+                                 .attr("stroke", colorScale(repo[k]))
+                                 .attr("fill", "none")
+                                 .attr("r", 10);
+                                 k++;
+                          }else {
+                              g.append("rect")
+                                 .attr("x", xScale(comdate[k]))
+                                 .attr("y", yScale(repo[k]))
+                                 .attr("width", 20)
+                                 .attr("height", 20)
+                                 .attr("stroke", "black")
+                                 .attr("fill", colorScale(repo[k]));
+                                 k++;
+                          }
+                          if(l<mnext.length){
+                            nextInd = cid.indexOf(mnext[l]);
+                                g.append("line")
+                                     .attr("x1", xScale(comdate[l]))
+                                     .attr("y1", yScale(repo[l]))
+                                     .attr("x2", xScale(comdate[nextInd]))
+                                     .attr("y2", yScale(repo[nextInd]))
+                                     .attr("stroke", colorScale(repo[l]))
+                                     .attr("stroke-width", 5);
+                                l++;
+                          }    
                       }
-                      
-                    //   var xscale = d3.scale.ordinal()
-                    //     .domain(repos)   // Data space
-                    //     .rangeRoundPoints([0, 200]); // Pixel space
-                
-                    //   var svg = d3.select("body").append("svg")
-                    //     .attr("width",  250)
-                    //     .attr("height", 250);
-                
-                    //   svg.selectAll("rect")
-                    //       .data(repos)
-                    //     .enter().append("rect")
-                    //       .attr("x", xscale)
-                    //       .attr("y", 50)
-                    //       .attr("width",  20)
-                    //       .attr("height", 20);    
+                   
              };
             });
             
@@ -323,36 +332,6 @@
         // });	    
                 
         
-    
-            // $scope.pages = 
-            // [
-            //     { title: 'Data binding basics', url: urlBase + '1_Data_binding_basics.html' },
-            //     { title: 'Looping with ng-repeat', url: urlBase + '2_Looping_with_ng-repeat.html' },
-            //     { title: 'Adding a Simple Controller', url: urlBase + '3_Adding_a_Simple_Controller.html' },
-            //     { title: 'Using ng-model and ng-click Directives', url: urlBase + '4_Using_ng-model_and_ng-click_Directives.html' },
-            //     { title: 'Filtering and Sorting Data', url: urlBase + '5_Filtering_and_Sorting_Data.html' },
-            //     { title: 'Adding a Module and Controller', url: urlBase + '6_Adding_a_Module_and_Controller.html' },
-            //     //{ title: 'Adding Module Configuration and Routing', url: urlBase + '7_Adding_Module_Configuration_and_Routing.html' },
-            //     { title: 'Module, Controller and Factory', url: urlBase + '8_Module-Controller-Factory.html' },
-            //     { title: 'Customer Management App', url: 'CustomerManagementApp.html', href: 'CustomerManagementApp.html' },
-            // ];
-            //  $scope.loadPage = function (page) {
-            // // //     if (page.href) {
-            // // //         document.location = page.href; //Load new page
-            // // //     }
-            // // //     $scope.template = page.url;
-            //     $http({ method: 'GET', url: '/', cache: $templateCache })
-            //       .success(function (html) {
-            //           $scope.html = html;
-            //           $('textarea').text(html); //Had to go with this due to IE
-            //       })
-            //       .error(function (html, status) {
-            //           $scope.html = 'Unable to load code: ' + status;
-            //       });
-            // }
-        
-           
-
     </script>
 </body>
 </html>
