@@ -8,15 +8,16 @@
     
     
 </head>
-<body data-ng-view>
+<body ng-view>
     <h2>
         <img src="Content/images/angularShield.png" />ngularJS Project on LinuxGitMsr</h2>
     <div class="row">
         <div class="span4 section">
             <h5>Mcidlinus Commits:</h5>
-            <ol>
-                <li data-ng-repeat="page in pages.commits">
-                    <a target="_blank" href="#/{{$index}}">{{page}}</a>
+            <ol> 
+                <!--<li ng-repeat="page in filtered = (pages |  filter:customfilter | orderBy:customsort)">-->
+                <li ng-repeat="page in pages | filter:query">
+                    <a target="_blank" href="#/{{pages.indexOf(page)}}">{{page}}</a>
                     <!--{{page}}-->
                     
                 </li>
@@ -27,8 +28,8 @@
             <!-- <div id="sampleContent"></div> -->
             <br />
             <div class="container">
-                <h4>Search:</h4>
-                <textarea></textarea>
+                <h4>Search:</h4> <input ng-model="query" type="text"/>
+                <!--<textarea></textarea>-->
             </div>
         </div>
     </div>
@@ -74,7 +75,21 @@
         samplesModule.controller('samplesController', function (commitsJson, $scope, $templateCache, $http, $location, $routeParams) {
             
             commitsJson.commits.success(function(cdata) {
-            $scope.pages = cdata; 
+                var z =0;
+                var pages = [];
+                var mwhen = [];
+                var pid = [];
+                while(cdata.commits[z]){
+                    pages[z] = cdata.commits[z].mcidlinus;
+                    mwhen[z] = new Date(cdata.commits[z].mwhen);
+                    pid[z] = cdata.commits[z].id;
+                    z++;
+                }
+                console.log(pages,mwhen,pid);
+                 $scope.pages = pages;
+                 $scope.mwhen = mwhen;
+                 $scope.pid = pid;
+                
             });
             
             $scope.commitId = $routeParams.commitId;
@@ -95,38 +110,52 @@
                 var comdate = [];
                 var mwhen = [];
                 var mcidlinus = [];
+                var mnextmerge = [];
                 var i = 0;
+                var len = mcid.length-1;
+                var repoOpp = [];
+                var rl = 0;
+                
                 while (mcid[i]){
+                    mnextmerge[i] = mcid[i].mnextmerge;
                     cid[i]= mcid[i].cid;
-                    mcidlinus[i] = mcid[i].mcidlinus;
                     repo[i] = mcid[i].repo;
                     comdate[i] = new Date(mcid[i].comdate);
-                    mwhen[i] = new Date(mcid[i].mwhen);
+                    if(i==0){
+                        mcidlinus[0] = mcid[i].mcidlinus;
+                        mwhen[0] = new Date(mcid[i].mwhen);
+                    }
+                    repoOpp[i] = mcid[len].repo;
+                    len--;
                     i++;
                 }
-                cid[i] = mcidlinus[i-1];
-                repo[i] = "torvalds/linux";
-                comdate[i] = mwhen[i-1];
-                var repos = repo.unique();
+                
+                cid[i] = mcidlinus[0];
+                repo[i] = "linus/linus";
+                comdate[i] = mwhen[0];
+                var repos = repoOpp.unique().reverse();
+                repos[repos.length] = "linus/linus";
                 var comdates = comdate.unique();
+                var merges = mnextmerge.unique();
                 
                 $scope.cid = cid;
                 $scope.repo = repos;
                 $scope.comdate = comdates;
                 
-                var fields = Object.keys(mcid[0]);
-                var csv = mcid.map(function(row){
-                  return fields.map(function(fieldName){
-                    return JSON.stringify(row[fieldName] || '');
-                  });
-                });
-                csv.unshift(fields);
+                
+                // var fields = Object.keys(mcid[0]);
+                // var csv = mcid.map(function(row){
+                //   return fields.map(function(fieldName){
+                //     return JSON.stringify(row[fieldName] || '');
+                //   });
+                // });
+                // csv.unshift(fields);
                 
                 
                 $scope.tree = function (scope, element, attrs){
                       var outerWidth = 1200;
                       var outerHeight = 700;
-                      var margin = { left: 350, top: 5, right: 5, bottom: 100 };
+                      var margin = { left: 350, top: 20, right: 20, bottom: 100 };
                 
                       var xAxisLabelText = "Commit Time";
                       var xAxisLabelOffset = 80;
@@ -156,8 +185,9 @@
                 
                       var yAxisG = g.append("g")
                         .attr("class", "y axis");
+
                       var yAxisLabel = yAxisG.append("text")
-                        .style("text-anchor", "middle")
+                        .style("text-anchor", "start")
                         .attr("transform", "translate(-" + yAxisLabelOffset + "," + (innerHeight / 2) + ") rotate(-90)")
                         .attr("class", "label")
                         .text(yAxisLabelText);
@@ -169,7 +199,7 @@
                       var yScale = d3.scale.ordinal()
                         .domain(repos)
                         .rangeRoundBands([0, innerHeight]);
-                
+                      var colorScale = d3.scale.category10();
 
                       var xAxis = d3.svg.axis().scale(xScale).orient("bottom")
                         .ticks(5)
@@ -180,10 +210,24 @@
                         //.tickFormat(d3.format("s"))
                         .outerTickSize(0);
                         
-                      console.log(cid,repos,comdates,csv);
-                      
                       xAxisG.call(xAxis);
                       yAxisG.call(yAxis);
+                      
+                      //var bandSize = yScale.rangeRoundBands();
+                      
+                      console.log(repo,repos,comdates,yScale(repo[0]));
+                      
+                      var k = 0;
+                      while(comdate[k]){
+                          g.append("circle")
+                             .attr("cx", xScale(comdate[k]))
+                             .attr("cy", yScale(repo[k]))
+                             .attr("stroke", colorScale(repo[k]))
+                             .attr("fill", "none")
+                             .attr("r", 10);
+                             k++;
+                      }
+                      
                     //   var xscale = d3.scale.ordinal()
                     //     .domain(repos)   // Data space
                     //     .rangeRoundPoints([0, 200]); // Pixel space
