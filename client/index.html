@@ -5,33 +5,110 @@
     <link href="Content/bootstrap.min.css" rel="stylesheet" />
     <link href="Content/bootstrap-responsive.min.css" rel="stylesheet" />
     <link href="Content/styles.css" rel="stylesheet" />
+    <link href="Content/table.css" rel="stylesheet" />
+    
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.0/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="/resources/demos/style.css">
+    <script>
+                  $( function() {
+                    var dateFormat = "mm/dd/yy",
+                      from = $( "#from" )
+                        .datepicker({
+                          defaultDate: "+1w",
+                          changeMonth: true,
+                          numberOfMonths: 3
+                        })
+                        .on( "change", function() {
+                          to.datepicker( "option", "minDate", getDate( this ) );
+                        }),
+                      to = $( "#to" ).datepicker({
+                        defaultDate: "+1w",
+                        changeMonth: true,
+                        numberOfMonths: 3
+                      })
+                      .on( "change", function() {
+                        from.datepicker( "option", "maxDate", getDate( this ) );
+                      });
+                 
+                    function getDate( element ) {
+                      var date;
+                      try {
+                        date = $.datepicker.parseDate( dateFormat, element.value );
+                      } catch( error ) {
+                        date = null;
+                      }
+                 
+                      return date;
+                    }
+                  } );
+    </script>
     
     
 </head>
 <body ng-view>
     <h2>
-        <img src="Content/images/angularShield.png" />ngularJS Project: Visualizing Commit-Propagation into --> The Super-Repository of Linux</h2>
+        <img src="Content/images/angularShield.png" width="5%" height="5%"/>ngularJS Project: Visualizing Commit-Propagation --> The Super-Repository of Linux</h2>
     <div class="row">
-        <div class="span4 section">
-            <h5>Mcidlinus Commits:</h5>
-            <ol> 
+
+
+        <!--<div class="span4 section">-->
+        <!--    <h5>Mcidlinus Commits:</h5>-->
+            <!--<ol> -->
                 <!--<li ng-repeat="page in filtered = (pages |  filter:customfilter | orderBy:customsort)">-->
-                <li ng-repeat="page in pages | filter:query">
-                    <a target="_blank" href="#/{{pages.indexOf(page)}}">{{page}}</a>
+            <!--    <li ng-repeat="page in pages | filter:query">-->
+            <!--        <a target="_blank" href="#/{{pages.indexOf(page)}}">{{page.mcidlinus}} {{page.comdate}} {{page.log}} </a>-->
                     <!--{{page}}-->
                     
-                </li>
-            </ol>
-        </div>
+            <!--    </li>-->
+            <!--</ol>-->
+        <!--</div>-->
+        
         <div class="span8">
             <ng-include src="template"></ng-include>
             <!-- <div id="sampleContent"></div> -->
             <br />
             <div class="container">
-                <h4>Search:</h4> <input ng-model="query" type="text"/>
+                <h4>Search by: 
+                    <select name="sel" style="width: 120px">
+                        <option value="1">Commit ID</option>
+                        <option value="2">Commit Date</option>
+                        <option value="3">Commit Log</option>
+                    </select>
+                    <input ng-model="query" type="text"/>
+                    
+                        <label for="from">From:</label>
+                        <input type="date" name="from"/>
+                        <label for="to">To:</label>
+                        <input type="date" name="to"/>
+                    
+                   
+                </h4>
                 <!--<textarea></textarea>-->
             </div>
         </div>
+        
+        <br><br><br>
+        
+        <div class="table-title">
+            <h2>Commit List Linux Repo 2012</h2>
+        </div>
+        <table class="table-fill">
+            <thead>
+                <tr>
+                    <th class="text-left">Commit ID</th>
+                    <th class="text-left">Commit Date</th>
+                    <th class="text-left">Commit Logs</th>
+                </tr>
+            </thead>
+            <tbody class="table-hover">
+                <tr ng-repeat ="page in pages | filter:query">
+                    <td class="text-left"> <a target="_blank" href="#/{{pages.indexOf(page)}}">{{page.mcidlinus}} </a></td>
+                    <td class="text-left">{{page.comdate | date:'medium'}} </td>
+                    <td class="text-left">{{page.log}}</td>
+                </tr>
+                
+            </tbody>
+        </table>
     </div>
 
     <script src="Scripts/jquery.min.js"></script>
@@ -39,9 +116,12 @@
     <script src="Scripts/bootstrap.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.2.10/angular-route.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
-
-    <script>
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.0/jquery-ui.js"></script>
     
+    
+    <script>
+        // http://plnkr.co/edit/XklvXtc1AZpndjLvXrh8?p=preview
         //http://lepidllama.net/blog/how-to-push-an-existing-cloud9-project-to-github/
         //*****************APP*******************
         //var urlBase = '/DemoPartials/';
@@ -80,9 +160,14 @@
                 var mwhen = [];
                 var pid = [];
                 while(cdata.commits[z]){
+                    
+                    pages.push({mcidlinus: cdata.commits[z].cid, comdate: new Date(cdata.commits[z].comdate), log: cdata.commits[z].log});
+                    
+                    /*
                     pages[z] = cdata.commits[z].mcidlinus;
                     mwhen[z] = new Date(cdata.commits[z].mwhen);
                     pid[z] = cdata.commits[z].id;
+                    */
                     z++;
                 }
                 console.log(pages,mwhen,pid);
@@ -213,53 +298,77 @@
                         
                       xAxisG.call(xAxis);
                       yAxisG.call(yAxis);
-                      
+                    
+                    
                     var bandSize = yScale(repos[1])/2;
                     
                     console.log(bandSize,repos,comdate);
                       
                       var comLen = comdate.length;
                       var k = 0, l=0, nextInd=1;
-                      while(k<comLen){
-                          if(mnextmerge.indexOf(cid[k])==-1){
-                              g.append("circle")
-                                 .attr("cx", xScale(comdate[k]))
-                                 .attr("cy", yScale(repo[k])+bandSize)
-                                 .attr("stroke", colorScale(repo[k]))
-                                 .attr("fill", "none")
-                                 .attr("r", 10);
-                                 k++;
-                          }else {
-                              g.append("rect")
-                                 .attr("x", xScale(comdate[k]))
-                                 .attr("y", yScale(repo[k])+bandSize)
-                                 .attr("width", 20)
-                                 .attr("height", 20)
-                                 .attr("stroke", "black")
-                                 .attr("fill", colorScale(repo[k]));
-                                 k++;
+                      var viz = function(){
+                         
+                          while(k<comLen){
+                              if(mnextmerge.indexOf(cid[k])==-1){
+                                  g.append("circle")
+                                     .attr("cx", xScale(comdate[k]))
+                                     .attr("cy", yScale(repo[k])+bandSize)
+                                     .attr("stroke", colorScale(repo[k]))
+                                     .attr("fill", "none")
+                                     .attr("r", 10);
+                                     k++;
+                              }else {
+                                  g.append("rect")
+                                     .attr("x", xScale(comdate[k]))
+                                     .attr("y", yScale(repo[k])+bandSize)
+                                     .attr("width", 20)
+                                     .attr("height", 20)
+                                     .attr("stroke", "black")
+                                     .attr("fill", colorScale(repo[k]));
+                                     k++;
+                              }
+                              if(l<mnext.length){
+                                nextInd = cid.indexOf(mnext[l]);
+                                    g.append("line")
+                                         .attr("x1", xScale(comdate[l]))
+                                         .attr("y1", yScale(repo[l])+bandSize)
+                                         .attr("x2", xScale(comdate[nextInd]))
+                                         .attr("y2", yScale(repo[nextInd])+bandSize)
+                                         .attr("stroke", colorScale(repo[l]))
+                                         .attr("stroke-width", 5);
+                                    l++;
+                              }else {
+                                  g.append("line")
+                                         .attr("x1", xScale(comdate[comLen-1]))
+                                         .attr("y1", yScale(repo[comLen-1])+bandSize)
+                                         .attr("x2", 0)
+                                         .attr("y2", yScale(repo[comLen-1])+bandSize)
+                                         .attr("stroke", colorScale(repo[comLen-1]))
+                                         .attr("stroke-width", 5);
+                              }    
                           }
-                          if(l<mnext.length){
-                            nextInd = cid.indexOf(mnext[l]);
-                                g.append("line")
-                                     .attr("x1", xScale(comdate[l]))
-                                     .attr("y1", yScale(repo[l])+bandSize)
-                                     .attr("x2", xScale(comdate[nextInd]))
-                                     .attr("y2", yScale(repo[nextInd])+bandSize)
-                                     .attr("stroke", colorScale(repo[l]))
-                                     .attr("stroke-width", 5);
-                                l++;
-                          }else {
-                              g.append("line")
-                                     .attr("x1", xScale(comdate[comLen-1]))
-                                     .attr("y1", yScale(repo[comLen-1])+bandSize)
-                                     .attr("x2", 0)
-                                     .attr("y2", yScale(repo[comLen-1])+bandSize)
-                                     .attr("stroke", colorScale(repo[comLen-1]))
-                                     .attr("stroke-width", 5);
-                          }    
-                      }
-                   
+                     }
+                     
+                     viz();
+                      var rect = g.append("rect")
+                            .attr("class", "pane")
+                            .attr("width", innerWidth)
+                            .attr("height", innerHeight);
+                            
+                     var zoom = d3.behavior.zoom()
+                                  .x(xScale)
+                                  .on("zoom", draw);
+                     rect.call(zoom); //rect.call(d3.behavior.zoom().x(x).scaleExtent([0.5, 4]).on("zoom", draw));
+                                 
+                     function draw() {
+                            svg.select("g.x.axis").call(xAxis);
+                            svg.select("g.y.axis").call(yAxis);
+                            viz();
+                            // svg.select("path.area").attr("d", area);
+                            // svg.select("path.line").attr("d", line);
+                        }        
+                                
+                                
              };
             });
             
