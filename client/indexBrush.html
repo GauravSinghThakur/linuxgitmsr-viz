@@ -154,9 +154,6 @@
             commitsJson.commitInfo.success(function(data) {
                 var mcid = [];
                 mcid = data.commitInfo[$routeParams.commitId];
-                
-                
-                
                 var cid = [];
                 var repo = [];
                 var comdate = [];
@@ -168,12 +165,7 @@
                 var len = mcid.length-1;
                 var repoOpp = [];
                 
-                var drawData=[];
-                
                 while (mcid[i]){
-                    
-                    drawData.push({repo: mcid[i].repo, comdate: new Date(mcid[i].comdate)});
-                    
                     mnextmerge[i] = mcid[i].mnextmerge;
                     mnext[i] = mcid[i].mnext;
                     cid[i]= mcid[i].cid;
@@ -187,8 +179,6 @@
                     len--;
                     i++;
                 }
-                
-                drawData.push({repo: "linus/linus", comdate:  mwhen[0]});
                 
                 cid[i] = mcidlinus[0];
                 repo[i] = "linus/linus";
@@ -213,176 +203,108 @@
                 
                 
                 $scope.tree = function (scope, element, attrs){
-                    
-                    var outerWidth = 1200;
-                      var outerHeight = 700;
-                      var margin = { left: 350, top: 20, right: 20, bottom: 100 };
-                
-                      var xAxisLabelText = "Commit Time";
-                      var xAxisLabelOffset = 80;
-                
-                      var yAxisLabelText = "Repos";
-                      var yAxisLabelOffset = 300;
-                
-                      var innerWidth  = outerWidth  - margin.left - margin.right;
-                      var innerHeight = outerHeight - margin.top  - margin.bottom;
-                
-                      var svg = d3.select("body").append("svg")
-                        .attr("width", outerWidth)
-                        .attr("height", outerHeight);
                      
-                      var g = svg.append("g")
-                        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-                      var path = g.append("path")
-                        .attr("class", "chart-line");
-                
-                      var xAxisG = g.append("g")
-                        .attr("class", "x axis")
-                        .attr("transform", "translate(0," + innerHeight + ")");
-                      
-                      var xAxisLabel = xAxisG.append("text")
-                        .style("text-anchor", "middle")
-                        .attr("transform", "translate(" + (innerWidth / 2) + "," + xAxisLabelOffset + ")")
-                        .attr("class", "label")
-                        .text(xAxisLabelText);
-                
-                      var yAxisG = g.append("g")
-                        .attr("class", "y axis");
-                      
-                      var yAxisLabel = yAxisG.append("text")
-                        .style("text-anchor", "start")
-                        .attr("transform", "translate(-" + yAxisLabelOffset + "," + (innerHeight / 2) + ") rotate(-90)")
-                        .attr("class", "label")
-                        .text(yAxisLabelText);
                     
-                    var yDom = function(){
-                          var arr = [];
-                          for(var i = 0; i<repos.length; i++){
-                              arr[i] = i+1;
-                          }
-                          return arr;
-                      }; 
-                      
-                      var xScale = d3.time.scale()
-                        .domain(d3.extent(comdates))
-                        .nice(d3.time.month)
-                        .range([0, innerWidth]);
+                    var margin = {top: 10, right: 10, bottom: 100, left: 40},
+                        margin2 = {top: 430, right: 10, bottom: 20, left: 40},
+                        width = 960 - margin.left - margin.right,
+                        height = 500 - margin.top - margin.bottom,
+                        height2 = 500 - margin2.top - margin2.bottom;
                     
-                     var yScale = d3.scale.linear()
-                        .domain([0,yDom().length+1])
-                        .range([0, innerHeight]);
-                      
-                      var colorScale = d3.scale.category20();
-                      
-                      var xAxis = d3.svg.axis().scale(xScale).orient("bottom")
-                        .ticks(5)
-                        //.tickFormat()
-                        .outerTickSize(0);
-                        
-                      var yAxis = d3.svg.axis().scale(yScale).orient("left")
-                        .ticks(10)
-                        //.tickFormat(d3.format("s"))
-                         .tickValues(yDom)
-                        .tickFormat(function(d,i){ return repos[i]; })
-                        .outerTickSize(0);
-                        
-                      xAxisG.call(xAxis);
-                      yAxisG.call(yAxis);
+                    var parseDate = d3.time.format("%b %Y").parse;
                     
+                    var x = d3.time.scale().range([0, width]),
+                        x2 = d3.time.scale().range([0, width]),
+                        y = d3.scale.linear().range([height, 0]),
+                        y2 = d3.scale.linear().range([height2, 0]);
                     
-                    var bandSize = yScale(repos[1])/2;
+                    var xAxis = d3.svg.axis().scale(x).orient("bottom"),
+                        xAxis2 = d3.svg.axis().scale(x2).orient("bottom"),
+                        yAxis = d3.svg.axis().scale(y).orient("left");
                     
-                    console.log(bandSize,repos,comdate);
-                      
-                      var comLen = comdate.length;
-                      var k = 0, l=0, nextInd=1;
-                    //   var viz = function(){
-                         
-                    //       while(k<comLen){
-                    //           if(mnextmerge.indexOf(cid[k])==-1){
-                    //               g.append("circle")
-                    //                  .attr("cx", xScale(comdate[k]))
-                    //                  .attr("cy", yScale(repos.indexOf(repo[k])+1))//+bandSize)
-                    //                  .attr("stroke", colorScale(repo[k]))
-                    //                  .attr("fill", "none")
-                    //                  .attr("r", 10);
-                    //                  k++;
-                    //           }else {
-                    //               g.append("rect")
-                    //                  .attr("x", xScale(comdate[k]))
-                    //                  .attr("y", yScale(repos.indexOf(repo[k])+1))//+bandSize)
-                    //                  .attr("width", 20)
-                    //                  .attr("height", 20)
-                    //                  .attr("stroke", "black")
-                    //                  .attr("fill", colorScale(repo[k]));
-                    //                  k++;
-                    //           }
-                    //           if(l<mnext.length){
-                    //             nextInd = cid.indexOf(mnext[l]);
-                    //                 g.append("line")
-                    //                      .attr("x1", xScale(comdate[l]))
-                    //                      .attr("y1", yScale(repos.indexOf(repo[l])+1))//+bandSize)
-                    //                      .attr("x2", xScale(comdate[nextInd]))
-                    //                      .attr("y2", yScale(repos.indexOf(repo[nextInd])+1))//+bandSize)
-                    //                      .attr("stroke", colorScale(repo[l]))
-                    //                      .attr("stroke-width", 5);
-                    //                 l++;
-                    //           }else {
-                    //               g.append("line")
-                    //                      .attr("x1", xScale(comdate[comLen-1]))
-                    //                      .attr("y1", yScale(repos.indexOf(repo[comLen-1])+1))//+bandSize)
-                    //                      .attr("x2", 0)
-                    //                      .attr("y2", yScale(repos.indexOf(repo[comLen-1])+1))//+bandSize)
-                    //                      .attr("stroke", colorScale(repo[comLen-1]))
-                    //                      .attr("stroke-width", 5);
-                    //           }    
-                    //       }
-                    //  };
+                    var brush = d3.svg.brush()
+                        .x(x2)
+                        .on("brush", brushed);
                     
-                      
-                     //viz();
-                  
-                    var clip = g.append("defs").append("svg:clipPath")
+                    var area = d3.svg.area()
+                        .interpolate("monotone")
+                        .x(function(d) { return x(d.date); })
+                        .y0(height)
+                        .y1(function(d) { return y(d.price); });
+                    
+                    var area2 = d3.svg.area()
+                        .interpolate("monotone")
+                        .x(function(d) { return x2(d.date); })
+                        .y0(height2)
+                        .y1(function(d) { return y2(d.price); });
+                    
+                    var svg = d3.select("body").append("svg")
+                        .attr("width", width + margin.left + margin.right)
+                        .attr("height", height + margin.top + margin.bottom);
+                    
+                    svg.append("defs").append("clipPath")
                         .attr("id", "clip")
-                        .append("svg:rect")
-                        .attr("id", "clip-rect")
-                        .attr("width", innerWidth)
-                        .attr("height", innerHeight);
-                        
-                    g.append("g").attr("clip-path", "url(#clip)")
-                        .selectAll("circle")
-                        .data(drawData)
-                        .enter()
-                        .append("circle")
-                        .attr("cx", function(d) { return xScale(d.comdate); } )
-                        .attr("cy", function(d) { return yScale(repos.indexOf(d.repo)+1); })
-                        .attr("r", 10)
-                        .attr("stroke", function(d) { return colorScale(d.repo); })
-                        .attr("fill", "none");
-                            
-                      var rect = g.append("rect")
-                            .attr("class", "pane")
-                            .attr("width", innerWidth)
-                            .attr("height", innerHeight);
-                            
-                     var zoom = d3.behavior.zoom()
-                                  .x(xScale)
-                                  //.y(yScale)
-                                   .scaleExtent([0.1, 1000000])
-                                  .on("zoom", draw);
-                     rect.call(zoom); //rect.call(d3.behavior.zoom().x(x).scaleExtent([0.5, 4]).on("zoom", draw));
-                                 
-                     function draw() {
-                            svg.select("g.x.axis").call(xAxis);
-                            //svg.select("g.y.axis").call(yAxis);
-                            //viz();
-                            var circles =  g.selectAll("circle");
-                              circles
-                             .attr("cx", function(d, i) { return xScale(d.comdate); });
-                            // svg.select("path.area").attr("d", area);
-                            // svg.select("path.line").attr("d", line);
-                        }        
-                                
+                      .append("rect")
+                        .attr("width", width)
+                        .attr("height", height);
+                    
+                    var focus = svg.append("g")
+                        .attr("class", "focus")
+                        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+                    
+                    var context = svg.append("g")
+                        .attr("class", "context")
+                        .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
+                    
+                    d3.csv("sp500.csv", type, function(error, data) {
+                      x.domain(d3.extent(data.map(function(d) { return d.date; })));
+                      y.domain([0, d3.max(data.map(function(d) { return d.price; }))]);
+                      x2.domain(x.domain());
+                      y2.domain(y.domain());
+                    
+                      focus.append("path")
+                          .datum(data)
+                          .attr("class", "area")
+                          .attr("d", area);
+                    
+                      focus.append("g")
+                          .attr("class", "x axis")
+                          .attr("transform", "translate(0," + height + ")")
+                          .call(xAxis);
+                    
+                      focus.append("g")
+                          .attr("class", "y axis")
+                          .call(yAxis);
+                    
+                      context.append("path")
+                          .datum(data)
+                          .attr("class", "area")
+                          .attr("d", area2);
+                    
+                      context.append("g")
+                          .attr("class", "x axis")
+                          .attr("transform", "translate(0," + height2 + ")")
+                          .call(xAxis2);
+                    
+                      context.append("g")
+                          .attr("class", "x brush")
+                          .call(brush)
+                        .selectAll("rect")
+                          .attr("y", -6)
+                          .attr("height", height2 + 7);
+                    });
+                    
+                    function brushed() {
+                      x.domain(brush.empty() ? x2.domain() : brush.extent());
+                      focus.select(".area").attr("d", area);
+                      focus.select(".x.axis").call(xAxis);
+                    }
+                    
+                    function type(d) {
+                      d.date = parseDate(d.date);
+                      d.price = +d.price;
+                      return d;
+                    }
              };
             });
             

@@ -154,9 +154,6 @@
             commitsJson.commitInfo.success(function(data) {
                 var mcid = [];
                 mcid = data.commitInfo[$routeParams.commitId];
-                
-                
-                
                 var cid = [];
                 var repo = [];
                 var comdate = [];
@@ -168,12 +165,7 @@
                 var len = mcid.length-1;
                 var repoOpp = [];
                 
-                var drawData=[];
-                
                 while (mcid[i]){
-                    
-                    drawData.push({repo: mcid[i].repo, comdate: new Date(mcid[i].comdate)});
-                    
                     mnextmerge[i] = mcid[i].mnextmerge;
                     mnext[i] = mcid[i].mnext;
                     cid[i]= mcid[i].cid;
@@ -187,8 +179,6 @@
                     len--;
                     i++;
                 }
-                
-                drawData.push({repo: "linus/linus", comdate:  mwhen[0]});
                 
                 cid[i] = mcidlinus[0];
                 repo[i] = "linus/linus";
@@ -214,175 +204,120 @@
                 
                 $scope.tree = function (scope, element, attrs){
                     
-                    var outerWidth = 1200;
-                      var outerHeight = 700;
-                      var margin = { left: 350, top: 20, right: 20, bottom: 100 };
-                
-                      var xAxisLabelText = "Commit Time";
-                      var xAxisLabelOffset = 80;
-                
-                      var yAxisLabelText = "Repos";
-                      var yAxisLabelOffset = 300;
-                
-                      var innerWidth  = outerWidth  - margin.left - margin.right;
-                      var innerHeight = outerHeight - margin.top  - margin.bottom;
-                
-                      var svg = d3.select("body").append("svg")
-                        .attr("width", outerWidth)
-                        .attr("height", outerHeight);
-                     
-                      var g = svg.append("g")
-                        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-                      var path = g.append("path")
-                        .attr("class", "chart-line");
-                
-                      var xAxisG = g.append("g")
-                        .attr("class", "x axis")
-                        .attr("transform", "translate(0," + innerHeight + ")");
-                      
-                      var xAxisLabel = xAxisG.append("text")
-                        .style("text-anchor", "middle")
-                        .attr("transform", "translate(" + (innerWidth / 2) + "," + xAxisLabelOffset + ")")
-                        .attr("class", "label")
-                        .text(xAxisLabelText);
-                
-                      var yAxisG = g.append("g")
-                        .attr("class", "y axis");
-                      
-                      var yAxisLabel = yAxisG.append("text")
-                        .style("text-anchor", "start")
-                        .attr("transform", "translate(-" + yAxisLabelOffset + "," + (innerHeight / 2) + ") rotate(-90)")
-                        .attr("class", "label")
-                        .text(yAxisLabelText);
+                    // Variables
+                    var svgWidth  = 400,
+                        svgHeight = 400,    
+                        originalCircle = [{"cx": "1357720800000", "cy": 5, "radius": 20},{"cx": "1457719600000", "cy": 10, "radius": 20}],
+                        margin = {"top": 25, "right": 25, "bottom": 50, "left": 50},
+                        width  = svgWidth - margin.left - margin.right,       
+                        height = svgHeight - margin.top  - margin.bottom;
                     
-                    var yDom = function(){
-                          var arr = [];
-                          for(var i = 0; i<repos.length; i++){
-                              arr[i] = i+1;
-                          }
-                          return arr;
-                      }; 
-                      
-                      var xScale = d3.time.scale()
-                        .domain(d3.extent(comdates))
+                    // SVG Viewport
+                    var svgViewport = d3.select("body").append("svg")
+                        .attr("width", width + margin.left + margin.right)
+                        .attr("height", height + margin.top + margin.bottom)
+                        .style("border", "2px solid");
+                    
+                    // Scales
+                    // var xAxisScale = d3.scale.linear()
+                    //     .domain([0, width])
+                    //     .range([0, width]);
+                        var xAxisScale = d3.time.scale()
+                        .domain(d3.extent(originalCircle, function (d) {
+                            return d.cx; }))
                         .nice(d3.time.month)
-                        .range([0, innerWidth]);
+                        .range([0, width]);
                     
-                     var yScale = d3.scale.linear()
-                        .domain([0,yDom().length+1])
-                        .range([0, innerHeight]);
+                    var YVal = ["abc","xyz"];
+                    var YDom = [5,10];
+                    var yAxisScale = d3.scale.linear()
+                        .domain([0,10])
+                        .range([height, 0]);
+                    // var yAxisScale = d3.scale.ordinal()
+                    //     .domain(originalCircle.map(function(d) { return d.cy; }))
+                    //     .rangeRoundBands([0, height]);
+                
+                    
+                    // Axis Functions
+                    var xAxis = d3.svg.axis()
+                        .scale(xAxisScale)
+                        .orient("bottom")
+                        .ticks(5);
+                    
+                    var yAxis = d3.svg.axis()
+                        .scale(yAxisScale)
+                        .orient("left")
+                        .tickValues(YDom)
+                        .tickFormat(function(d,i){ return YVal[i] });
                       
-                      var colorScale = d3.scale.category20();
-                      
-                      var xAxis = d3.svg.axis().scale(xScale).orient("bottom")
-                        .ticks(5)
-                        //.tickFormat()
-                        .outerTickSize(0);
+                    
+                    // Zoom Function Event Listener
+                    function zoomFunction() {
+  
+                        // Select All Circles
+                        var circles = d3.select("svg").selectAll("circle");
+                    
+                        // Pan Vector
+                        var panVector = d3.event.translate;
+                        var panX = panVector[0];
+                        var panY = panVector[1];
+                    
+                        // Scaling Multiplier
+                        var scaleMultiplier = d3.event.scale;
+                    
+                        // Tell us in HTML what is going on
+                        d3.select("#pan_x_span").text(panX);
+                        d3.select("#pan_y_span").text(panY);
+                        d3.select("#v_scale_val").text(scaleMultiplier);
+                    
+                        // Redraw the Axis
+                        innerSpace.select(".x.axis").call(xAxis);
+                        //innerSpace.select(".y.axis").call(yAxis);
+                    
+                        // Redraw the Circle
+                        circles
+                            .attr("cx", function(d, i) { return xAxisScale(d.cx); });
+                            //.attr("cy", function(d, i) { return yAxisScale(d.cy); })
+                            //.attr("r",  function(d, i) { return (d.radius * scaleMultiplier); });    
+                    }
                         
-                      var yAxis = d3.svg.axis().scale(yScale).orient("left")
-                        .ticks(10)
-                        //.tickFormat(d3.format("s"))
-                         .tickValues(yDom)
-                        .tickFormat(function(d,i){ return repos[i]; })
-                        .outerTickSize(0);
-                        
-                      xAxisG.call(xAxis);
-                      yAxisG.call(yAxis);
+                    var zoom = d3.behavior.zoom()
+                        .x(xAxisScale)
+                        .y(yAxisScale)
+                        .scaleExtent([0.2, 10])
+                        .on("zoom", zoomFunction);  
                     
-                    
-                    var bandSize = yScale(repos[1])/2;
-                    
-                    console.log(bandSize,repos,comdate);
-                      
-                      var comLen = comdate.length;
-                      var k = 0, l=0, nextInd=1;
-                    //   var viz = function(){
-                         
-                    //       while(k<comLen){
-                    //           if(mnextmerge.indexOf(cid[k])==-1){
-                    //               g.append("circle")
-                    //                  .attr("cx", xScale(comdate[k]))
-                    //                  .attr("cy", yScale(repos.indexOf(repo[k])+1))//+bandSize)
-                    //                  .attr("stroke", colorScale(repo[k]))
-                    //                  .attr("fill", "none")
-                    //                  .attr("r", 10);
-                    //                  k++;
-                    //           }else {
-                    //               g.append("rect")
-                    //                  .attr("x", xScale(comdate[k]))
-                    //                  .attr("y", yScale(repos.indexOf(repo[k])+1))//+bandSize)
-                    //                  .attr("width", 20)
-                    //                  .attr("height", 20)
-                    //                  .attr("stroke", "black")
-                    //                  .attr("fill", colorScale(repo[k]));
-                    //                  k++;
-                    //           }
-                    //           if(l<mnext.length){
-                    //             nextInd = cid.indexOf(mnext[l]);
-                    //                 g.append("line")
-                    //                      .attr("x1", xScale(comdate[l]))
-                    //                      .attr("y1", yScale(repos.indexOf(repo[l])+1))//+bandSize)
-                    //                      .attr("x2", xScale(comdate[nextInd]))
-                    //                      .attr("y2", yScale(repos.indexOf(repo[nextInd])+1))//+bandSize)
-                    //                      .attr("stroke", colorScale(repo[l]))
-                    //                      .attr("stroke-width", 5);
-                    //                 l++;
-                    //           }else {
-                    //               g.append("line")
-                    //                      .attr("x1", xScale(comdate[comLen-1]))
-                    //                      .attr("y1", yScale(repos.indexOf(repo[comLen-1])+1))//+bandSize)
-                    //                      .attr("x2", 0)
-                    //                      .attr("y2", yScale(repos.indexOf(repo[comLen-1])+1))//+bandSize)
-                    //                      .attr("stroke", colorScale(repo[comLen-1]))
-                    //                      .attr("stroke-width", 5);
-                    //           }    
-                    //       }
-                    //  };
-                    
-                      
-                     //viz();
-                  
-                    var clip = g.append("defs").append("svg:clipPath")
-                        .attr("id", "clip")
-                        .append("svg:rect")
-                        .attr("id", "clip-rect")
-                        .attr("width", innerWidth)
-                        .attr("height", innerHeight);
-                        
-                    g.append("g").attr("clip-path", "url(#clip)")
-                        .selectAll("circle")
-                        .data(drawData)
-                        .enter()
-                        .append("circle")
-                        .attr("cx", function(d) { return xScale(d.comdate); } )
-                        .attr("cy", function(d) { return yScale(repos.indexOf(d.repo)+1); })
-                        .attr("r", 10)
-                        .attr("stroke", function(d) { return colorScale(d.repo); })
-                        .attr("fill", "none");
-                            
-                      var rect = g.append("rect")
-                            .attr("class", "pane")
-                            .attr("width", innerWidth)
-                            .attr("height", innerHeight);
-                            
-                     var zoom = d3.behavior.zoom()
-                                  .x(xScale)
-                                  //.y(yScale)
-                                   .scaleExtent([0.1, 1000000])
-                                  .on("zoom", draw);
-                     rect.call(zoom); //rect.call(d3.behavior.zoom().x(x).scaleExtent([0.5, 4]).on("zoom", draw));
-                                 
-                     function draw() {
-                            svg.select("g.x.axis").call(xAxis);
-                            //svg.select("g.y.axis").call(yAxis);
-                            //viz();
-                            var circles =  g.selectAll("circle");
-                              circles
-                             .attr("cx", function(d, i) { return xScale(d.comdate); });
-                            // svg.select("path.area").attr("d", area);
-                            // svg.select("path.line").attr("d", line);
-                        }        
+                    var innerSpace = svgViewport.append("g")
+                        .attr("class", "inner_space")
+                        .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+                        .call(zoom);              
                                 
+                                
+                    innerSpace.append("g")
+                        .attr("class", "x axis")
+                        .attr("transform", "translate(0," + height + ")")
+                        .call(xAxis);
+                    
+                    innerSpace.append("g")
+                        .attr("class", "y axis")
+                        .call(yAxis);   
+                        
+                    var circle = innerSpace.selectAll("circle")
+                        .data(originalCircle)
+                      .enter().append("circle")
+                        .attr("cx", function(d) { return xAxisScale(d.cx); })
+                        .attr("cy", function(d) { return yAxisScale(d.cy); })
+                        .attr("r",  function(d) { return d.radius; })
+                        .style("fill", "green");    
+                       
+                    d3.select("body").append("div").attr("id", "pan_x_div").text("Pan X Translate: ");
+                    d3.select("body").append("div").attr("id", "pan_y_div").text("Pan Y Translate: ");
+                    d3.select("body").append("div").attr("id", "v_scale").text("D3 Zoom Scale: ");
+                    
+                    d3.select("#pan_x_div").append("span").attr("id", "pan_x_span");
+                    d3.select("#pan_y_div").append("span").attr("id", "pan_y_span");
+                    d3.select("#v_scale").append("span").attr("id", "v_scale_val"); 
+                    
              };
             });
             
