@@ -172,7 +172,7 @@
                 
                 while (mcid[i]){
                     
-                    drawData.push({repo: mcid[i].repo, comdate: new Date(mcid[i].comdate)});
+                    drawData.push({cid: mcid[i].cid, mnext: mcid[i].mnext, mnextmerge: mcid[i].mnextmerge, repo: mcid[i].repo, comdate: new Date(mcid[i].comdate)});
                     
                     mnextmerge[i] = mcid[i].mnextmerge;
                     mnext[i] = mcid[i].mnext;
@@ -188,7 +188,7 @@
                     i++;
                 }
                 
-                drawData.push({repo: "linus/linus", comdate:  mwhen[0]});
+                drawData.push({cid: mcidlinus[0], mnext: "", mnextmerge: "", repo: "linus/linus", comdate:  mwhen[0]});
                 
                 cid[i] = mcidlinus[0];
                 repo[i] = "linus/linus";
@@ -349,16 +349,42 @@
                         .attr("width", innerWidth)
                         .attr("height", innerHeight);
                         
-                    g.append("g").attr("clip-path", "url(#clip)")
+                    g.append("g")
+                        .attr("id","figure")
+                        .attr("clip-path", "url(#clip)")
                         .selectAll("circle")
                         .data(drawData)
                         .enter()
                         .append("circle")
-                        .attr("cx", function(d) { return xScale(d.comdate); } )
-                        .attr("cy", function(d) { return yScale(repos.indexOf(d.repo)+1); })
+                        .attr("cx", function(d) { if (merges.indexOf(d.cid)==-1) { return xScale(d.comdate); } else{return -100;} } )
+                        .attr("cy", function(d) { if (merges.indexOf(d.cid)==-1) { return yScale(repos.indexOf(d.repo)+1);} else{return -100;} })
                         .attr("r", 10)
                         .attr("stroke", function(d) { return colorScale(d.repo); })
                         .attr("fill", "none");
+                        
+                      g.select("#figure")//.attr("clip-path", "url(#clip)")
+                        .selectAll("rect")
+                        .data(drawData)
+                        .enter().append("rect")
+                        .attr("x", function(d) { if (merges.indexOf(d.cid)!=-1) { return xScale(d.comdate); } else{return -100;} } )
+                        .attr("y", function(d) { if (merges.indexOf(d.cid)!=-1) { return yScale(repos.indexOf(d.repo)+1);} else{return -100;} })
+                        .attr("width", 20)
+                        .attr("height", 20)
+                        .attr("stroke", "black")
+                        .attr("fill", function(d) { return colorScale(d.repo); });
+                        
+                       g.select("#figure")
+                            .selectAll("line")
+                            .data(drawData)
+                            .enter().append("line")
+                            .attr("x1", function(d){ return xScale(d.comdate); })
+                            .attr("y1", function(d){ return yScale(repos.indexOf(d.repo)+1); })//+bandSize)
+                            .attr("x2", function(d){ if(d.mnext==""){return 0;} else {return xScale(comdate[cid.indexOf(d.mnext)]);} }) 
+                            .attr("y2", function(d){ if(d.mnext==""){return yScale(repos.indexOf("linus/linus")+1); } else { return yScale(repos.indexOf(repo[cid.indexOf(d.mnext)])+1); }})
+                            .attr("stroke", function(d) { return colorScale(d.repo); })
+                            .attr("stroke-width", 5);
+                       
+                               
                             
                       var rect = g.append("rect")
                             .attr("class", "pane")
@@ -370,15 +396,24 @@
                                   //.y(yScale)
                                    .scaleExtent([0.1, 1000000])
                                   .on("zoom", draw);
-                     rect.call(zoom); //rect.call(d3.behavior.zoom().x(x).scaleExtent([0.5, 4]).on("zoom", draw));
-                                 
+                     
+                     rect.call(zoom); 
+                     
                      function draw() {
                             svg.select("g.x.axis").call(xAxis);
-                            //svg.select("g.y.axis").call(yAxis);
-                            //viz();
-                            var circles =  g.selectAll("circle");
+                            var circles =  g.select("#figure").selectAll("circle");
                               circles
-                             .attr("cx", function(d, i) { return xScale(d.comdate); });
+                             .attr("cx", function(d) { return xScale(d.comdate); });
+                             
+                            var rectangles =  g.select("#figure").selectAll("rect");
+                              rectangles
+                             .attr("x", function(d) { return xScale(d.comdate); });
+                            
+                             var lines =  g.select("#figure").selectAll("line");
+                              lines
+                             .attr("x1", function(d) { return xScale(d.comdate); })
+                             .attr("x2", function(d){ if(d.mnext==""){return 0;} else {return xScale(comdate[cid.indexOf(d.mnext)]);} });
+                            
                             // svg.select("path.area").attr("d", area);
                             // svg.select("path.line").attr("d", line);
                         }        
