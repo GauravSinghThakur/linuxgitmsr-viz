@@ -11,7 +11,7 @@
 </head>
 <body ng-view>
     <h2>
-        <img src="Content/images/angularShield.png" width="5%" height="5%"/>ngularJS Project: Visualizing Commit-Propagation --> The Super-Repository of Linux</h2>
+        <img src="Content/images/angularShield.png" width="5%" height="5%"/>ngularJS Project: Visualizing Commit-Propagation >> The Super-Repository of Linux</h2>
     <div class="row">
 
 
@@ -54,7 +54,8 @@
         <br><br><br>
         
         <div class="table-title">
-            <h2>Commit List Linux Repo 2012</h2>
+            <br><br><br><br><br><br>
+            <h2>Linux Repo Commits(2012)</h2>
         </div>
         <table class="table-fill">
             <thead>
@@ -77,12 +78,13 @@
 
     <script src="Scripts/jquery.min.js"></script>
     <script src="Scripts/angular.js"></script>
+   
     <script src="Scripts/bootstrap.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.2.10/angular-route.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.0/jquery-ui.js"></script>
-    
+   
     
     <script>
         // http://plnkr.co/edit/XklvXtc1AZpndjLvXrh8?p=preview
@@ -226,13 +228,16 @@
                 
                       var innerWidth  = outerWidth  - margin.left - margin.right;
                       var innerHeight = outerHeight - margin.top  - margin.bottom;
-                
-                      var svg = d3.select("body").append("svg")
+                              
+                       var svg = d3.select("body")
+                        .append("svg")
+                        .attr("class","pane")
                         .attr("width", outerWidth)
                         .attr("height", outerHeight);
                      
                       var g = svg.append("g")
                         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+                        
                       var path = g.append("path")
                         .attr("class", "chart-line");
                 
@@ -296,52 +301,25 @@
                       
                       var comLen = comdate.length;
                       var k = 0, l=0, nextInd=1;
-                    //   var viz = function(){
-                         
-                    //       while(k<comLen){
-                    //           if(mnextmerge.indexOf(cid[k])==-1){
-                    //               g.append("circle")
-                    //                  .attr("cx", xScale(comdate[k]))
-                    //                  .attr("cy", yScale(repos.indexOf(repo[k])+1))//+bandSize)
-                    //                  .attr("stroke", colorScale(repo[k]))
-                    //                  .attr("fill", "none")
-                    //                  .attr("r", 10);
-                    //                  k++;
-                    //           }else {
-                    //               g.append("rect")
-                    //                  .attr("x", xScale(comdate[k]))
-                    //                  .attr("y", yScale(repos.indexOf(repo[k])+1))//+bandSize)
-                    //                  .attr("width", 20)
-                    //                  .attr("height", 20)
-                    //                  .attr("stroke", "black")
-                    //                  .attr("fill", colorScale(repo[k]));
-                    //                  k++;
-                    //           }
-                    //           if(l<mnext.length){
-                    //             nextInd = cid.indexOf(mnext[l]);
-                    //                 g.append("line")
-                    //                      .attr("x1", xScale(comdate[l]))
-                    //                      .attr("y1", yScale(repos.indexOf(repo[l])+1))//+bandSize)
-                    //                      .attr("x2", xScale(comdate[nextInd]))
-                    //                      .attr("y2", yScale(repos.indexOf(repo[nextInd])+1))//+bandSize)
-                    //                      .attr("stroke", colorScale(repo[l]))
-                    //                      .attr("stroke-width", 5);
-                    //                 l++;
-                    //           }else {
-                    //               g.append("line")
-                    //                      .attr("x1", xScale(comdate[comLen-1]))
-                    //                      .attr("y1", yScale(repos.indexOf(repo[comLen-1])+1))//+bandSize)
-                    //                      .attr("x2", 0)
-                    //                      .attr("y2", yScale(repos.indexOf(repo[comLen-1])+1))//+bandSize)
-                    //                      .attr("stroke", colorScale(repo[comLen-1]))
-                    //                      .attr("stroke-width", 5);
-                    //           }    
-                    //       }
-                    //  };
+                   
+                    // var tooltip = d3.select("body")
+                    //     .append("div")
+                    //     .attr("class", "tooltip")
+                    //     .style("background","grey")
+                    // 	.style("opacity", 0);
+                    	
+                    // function mouseover(d) {
+                    //     tooltip.html("hello")
+                    //         .style("left", (d3.event.pageX + 10) + "px")
+                    //         .style("top", (d3.event.pageY - 10) + "px")
+                    //         .style("opacity", 10);
+                    //         console.log("valueeeeeeeeeeeeeeeee"+d3.event.pageX) ;  
+                    // }
                     
-                      
-                     //viz();
-                  
+                    // function mouseout(d) {      
+                    //     tooltip.style("opacity", 0);
+                    // }
+                    
                     var clip = g.append("defs").append("svg:clipPath")
                         .attr("id", "clip")
                         .append("svg:rect")
@@ -349,6 +327,7 @@
                         .attr("width", innerWidth)
                         .attr("height", innerHeight);
                         
+                    
                     g.append("g")
                         .attr("id","figure")
                         .attr("clip-path", "url(#clip)")
@@ -360,7 +339,13 @@
                         .attr("cy", function(d) { if (merges.indexOf(d.cid)==-1) { return yScale(repos.indexOf(d.repo)+1);} else{return -100;} })
                         .attr("r", 10)
                         .attr("stroke", function(d) { return colorScale(d.repo); })
-                        .attr("fill", "none");
+                        .attr("fill", "none")
+                        .append("svg:title")
+                        .text(function(d) { return "Cid: " + d.cid; });
+                        // .on('mouseover', mouseover)
+                        // .on('mouseout', mouseout);
+                
+                              
                         
                       g.select("#figure")//.attr("clip-path", "url(#clip)")
                         .selectAll("rect")
@@ -382,22 +367,15 @@
                             .attr("x2", function(d){ if(d.mnext==""){return 0;} else {return xScale(comdate[cid.indexOf(d.mnext)]);} }) 
                             .attr("y2", function(d){ if(d.mnext==""){return yScale(repos.indexOf("linus/linus")+1); } else { return yScale(repos.indexOf(repo[cid.indexOf(d.mnext)])+1); }})
                             .attr("stroke", function(d) { return colorScale(d.repo); })
-                            .attr("stroke-width", 5);
-                       
-                               
-                            
-                      var rect = g.append("rect")
-                            .attr("class", "pane")
-                            .attr("width", innerWidth)
-                            .attr("height", innerHeight);
-                            
+                            .attr("stroke-width", 3);
+                   
                      var zoom = d3.behavior.zoom()
                                   .x(xScale)
                                   //.y(yScale)
-                                   .scaleExtent([0.1, 1000000])
+                                  .scaleExtent([0.1, 1000000])
                                   .on("zoom", draw);
                      
-                     rect.call(zoom); 
+                     svg.call(zoom);
                      
                      function draw() {
                             svg.select("g.x.axis").call(xAxis);
