@@ -385,7 +385,9 @@
                             .on("mouseout", function (d) {                                  
                           		d3.select(this)                          
                             	.style("stroke-width", 3);
-                            });
+                            })
+                            .append("svg:title")
+                            .text(function(d) { return ""+d.repo; });
                    
                      var zoom = d3.behavior.zoom()
                                   .x(xScale)
