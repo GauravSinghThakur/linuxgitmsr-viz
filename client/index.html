@@ -240,15 +240,15 @@
                 
                 $scope.tree = function (scope, element, attrs){
                     
-                    var outerWidth = 1200;
-                      var outerHeight = 700;
-                      var margin = { left: 350, top: 20, right: 20, bottom: 100 };
+                    var outerWidth = 1500;
+                      var outerHeight = 900;
+                      var margin = { left: 450, top: 20, right: 20, bottom: 100 };
                 
                       var xAxisLabelText = "Commit Time";
                       var xAxisLabelOffset = 80;
                 
                       var yAxisLabelText = "Repos";
-                      var yAxisLabelOffset = 300;
+                      var yAxisLabelOffset = 400;
                 
                       var innerWidth  = outerWidth  - margin.left - margin.right;
                       var innerHeight = outerHeight - margin.top  - margin.bottom;
@@ -326,25 +326,7 @@
                       var comLen = comdate.length;
                       var k = 0, l=0, nextInd=1;
                    
-                    // var tooltip = d3.select("body")
-                    //     .append("div")
-                    //     .attr("class", "tooltip")
-                    //     .style("background","grey")
-                    // 	.style("opacity", 0);
-                    	
-                    // function mouseover(d) {
-                    //     tooltip.html("hello")
-                    //         .style("left", (d3.event.pageX + 10) + "px")
-                    //         .style("top", (d3.event.pageY - 10) + "px")
-                    //         .style("opacity", 10);
-                    //         console.log("valueeeeeeeeeeeeeeeee"+d3.event.pageX) ;  
-                    // }
-                    
-                    // function mouseout(d) {      
-                    //     tooltip.style("opacity", 0);
-                    // }
-                    
-                    var clip = g.append("defs").append("svg:clipPath")
+                      var clip = g.append("defs").append("svg:clipPath")
                         .attr("id", "clip")
                         .append("svg:rect")
                         .attr("id", "clip-rect")
@@ -366,8 +348,7 @@
                         .attr("stroke-width", 1)
                         .attr("fill", "none")
                         .append("svg:title")
-                        .text(function(d) { return "Commit ID: \t"+d.cid+"\nNext Commit: \t"+d.mnext+"\nNext Merge: \t"+d.mnextmerge+"\nCommit Date: \t"+d.comdate+"\nRepository: \t"+d.repo; })
-                        ;
+                        .text(function(d) { return "Commit ID: \t"+d.cid+"\nNext Commit: \t"+d.mnext+"\nNext Merge: \t"+d.mnextmerge+"\nCommit Date: \t"+d.comdate+"\nRepository: \t"+d.repo; });
                               
                         
                       g.select("#figure")//.attr("clip-path", "url(#clip)")
@@ -379,7 +360,13 @@
                         .attr("width", 20)
                         .attr("height", 20)
                         .attr("stroke", "black")
-                        .attr("fill", function(d) { return colorScale(d.repo); });
+                        .attr("fill", function(d) { return colorScale(d.repo); })
+                        .on("click", function (d){
+                            window.open("https://github.com/torvalds/linux/commit/"+mcidlinus[0], '_blank');
+                         })
+                        .append("svg:title")
+                        .text(function(d) { return "Commit ID: \t"+d.cid+"\nNext Commit: \t"+d.mnext+"\nNext Merge: \t"+d.mnextmerge+"\nCommit Date: \t"+d.comdate+"\nRepository: \t"+d.repo; });
+                        
                         
                        g.select("#figure")
                             .selectAll("line")
