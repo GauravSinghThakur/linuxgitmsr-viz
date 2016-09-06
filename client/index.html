@@ -347,6 +347,14 @@
                         .attr("stroke", function(d) { return colorScale(d.repo); })
                         .attr("stroke-width", 1)
                         .attr("fill", "none")
+                        .on("mouseover", function (d) {                                  
+                          		d3.select(this)                          
+                            	.style("stroke-width", 6);
+                            })
+                        .on("mouseout", function (d) {                                  
+                          		d3.select(this)                          
+                            	.style("stroke-width", 1);
+                            })
                         .append("svg:title")
                         .text(function(d) { return "Commit ID: \t"+d.cid+"\nNext Commit: \t"+d.mnext+"\nNext Merge: \t"+d.mnextmerge+"\nCommit Date: \t"+d.comdate+"\nRepository: \t"+d.repo; });
                               
@@ -360,6 +368,15 @@
                         .attr("width", 20)
                         .attr("height", 20)
                         .attr("stroke", "black")
+                        .attr("stroke-width", 1)
+                        .on("mouseover", function (d) {                                  
+                          		d3.select(this)                          
+                            	.style("stroke-width", 6);
+                            })
+                        .on("mouseout", function (d) {                                  
+                          		d3.select(this)                          
+                            	.style("stroke-width", 1);
+                            })
                         .attr("fill", function(d) { return colorScale(d.repo); })
                         .on("click", function (d){
                             window.open("https://github.com/torvalds/linux/commit/"+mcidlinus[0], '_blank');
