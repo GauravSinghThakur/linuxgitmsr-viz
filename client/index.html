@@ -33,17 +33,24 @@
             <br />
             <div class="container">
                 <h4>Search by: 
-                    <select name="sel" style="width: 120px">
-                        <option value="1">Commit ID</option>
-                        <option value="2">Commit Date</option>
-                        <option value="3">Commit Log</option>
-                    </select>
-                    <input ng-model="query" type="text"/>
+                    <!--<select name="sel" style="width: 120px">-->
+                    <!--    <option value="1">Commit ID</option>-->
+                    <!--    <option value="2">Commit Date</option>-->
+                    <!--    <option value="3">Commit Log</option>-->
+                    <!--</select>-->
+                    <select ng-model="queryBy">
+                        <option value="$">Commit ID / Log</option>
+                        <!--<option value="mcidlinus">Commit ID</option>-->
+                        <!--<option value="comdate">Commit Date</option>-->
+                        <!--<option value="log">Log</option>-->
+                    </select>   
+                    <!--<input ng-model="query[queryBy]" type="text"/>-->
+                     <input type="search" ng-model="q" placeholder="Enter commit id or log string..." aria-label="filter" />
                     
-                        <label for="from">From:</label>
-                        <input type="date" name="from"/>
-                        <label for="to">To:</label>
-                        <input type="date" name="to"/>
+                        <label>From:</label>
+                        <input type='text' placeholder='2012-01-01' ng-model='fromdate'/>  
+                        <label>To:</label>
+                        <input type='text' value='2012-12-31' ng-model='todate'/>
                     
                    
                 </h4>
@@ -66,14 +73,15 @@
                 </tr>
             </thead>
             <tbody class="table-hover">
-                <tr ng-repeat ="page in pages | filter:query">
-                    <td class="text-left"> <a target="_blank" href="#/{{pages.indexOf(page)}}">{{page.mcidlinus}} </a></td>
-                    <td class="text-left">{{page.comdate | date:'medium'}} </td>
-                    <td class="text-left">{{page.log}}</td>
+                <tr ng-repeat ="page in pages | filter:q as results">
+                    <div ng-if="page.comdate >= fromdate && page.comdate <= todate">
+                        <td class="text-left"> <a target="_blank" href="#/{{pages.indexOf(page)}}">{{page.mcidlinus}} </a></td>
+                        <td class="text-left">{{page.comdate | date:'medium'}} </td>
+                        <td class="text-left">{{page.log}}</td>
                 </tr>
-                
             </tbody>
         </table>
+                    </div>
     </div>
 
     <script src="Scripts/jquery.min.js"></script>
@@ -115,7 +123,24 @@
           });
       });
       
-     
+        
+         //*****************FILTER*******************
+        samplesModule.filter("myfilter", function() {
+          return function(items, from, to) {
+                var df = parseDate(from);
+                var dt = parseDate(to);
+                var arrayToReturn = [];        
+                for (var i=0; i<items.length; i++){
+                    var tf = new Date(items[i].date1 * 1000),
+                        tt = new Date(items[i].date2 * 1000);
+                    if (tf > df && tt < dt)  {
+                        arrayToReturn.push(items[i]);
+                    }
+                }
+                
+                return arrayToReturn;
+          };
+        });
 
         //*****************CONTROLLER*******************
         samplesModule.controller('samplesController', function (commitsJson, $scope, $templateCache, $http, $location, $routeParams) {
@@ -123,24 +148,23 @@
             commitsJson.commits.success(function(cdata) {
                 var z =0;
                 var pages = [];
-                var mwhen = [];
-                var pid = [];
+              
                 while(cdata.commits[z]){
                     
                     pages.push({mcidlinus: cdata.commits[z].cid, comdate: new Date(cdata.commits[z].comdate), log: cdata.commits[z].log});
-                    
-                    /*
-                    pages[z] = cdata.commits[z].mcidlinus;
-                    mwhen[z] = new Date(cdata.commits[z].mwhen);
-                    pid[z] = cdata.commits[z].id;
-                    */
+                  
                     z++;
                 }
-                console.log(pages,mwhen,pid);
-                 $scope.pages = pages;
-                 $scope.mwhen = mwhen;
-                 $scope.pid = pid;
+                console.log(pages);
                 
+                $scope.query = {}; 
+                $scope.queryBy = '$';
+                $scope.pages = pages;
+                $scope.DateFilter = function () {
+                    console.log("dateeeeeeeeeeee hellooooooooo");
+                };
+
+                 
             });
             
             $scope.commitId = $routeParams.commitId;
@@ -339,12 +363,11 @@
                         .attr("cy", function(d) { if (merges.indexOf(d.cid)==-1) { return yScale(repos.indexOf(d.repo)+1);} else{return -100;} })
                         .attr("r", 10)
                         .attr("stroke", function(d) { return colorScale(d.repo); })
+                        .attr("stroke-width", 1)
                         .attr("fill", "none")
                         .append("svg:title")
-                        .text(function(d) { return "Cid: " + d.cid; });
-                        // .on('mouseover', mouseover)
-                        // .on('mouseout', mouseout);
-                
+                        .text(function(d) { return "Commit ID: \t"+d.cid+"\nNext Commit: \t"+d.mnext+"\nNext Merge: \t"+d.mnextmerge+"\nCommit Date: \t"+d.comdate+"\nRepository: \t"+d.repo; })
+                        ;
                               
                         
                       g.select("#figure")//.attr("clip-path", "url(#clip)")
@@ -367,7 +390,15 @@
                             .attr("x2", function(d){ if(d.mnext==""){return 0;} else {return xScale(comdate[cid.indexOf(d.mnext)]);} }) 
                             .attr("y2", function(d){ if(d.mnext==""){return yScale(repos.indexOf("linus/linus")+1); } else { return yScale(repos.indexOf(repo[cid.indexOf(d.mnext)])+1); }})
                             .attr("stroke", function(d) { return colorScale(d.repo); })
-                            .attr("stroke-width", 3);
+                            .attr("stroke-width", 3)
+                            .on("mouseover", function (d) {                                  
+                          		d3.select(this)                          
+                            	.style("stroke-width", 6);
+                            })
+                            .on("mouseout", function (d) {                                  
+                          		d3.select(this)                          
+                            	.style("stroke-width", 3);
+                            });
                    
                      var zoom = d3.behavior.zoom()
                                   .x(xScale)

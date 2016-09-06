@@ -1,0 +1,103 @@
+0 info it worked if it ends with ok
+1 verbose cli [ '/home/ubuntu/.nvm/versions/node/v4.4.5/bin/node',
+1 verbose cli   '/home/ubuntu/.nvm/versions/node/v4.4.5/bin/npm',
+1 verbose cli   'install',
+1 verbose cli   'datetimeRangePicker' ]
+2 info using npm@2.15.5
+3 info using node@v4.4.5
+4 verbose install initial load of /home/ubuntu/workspace/package.json
+5 warn package.json chat-example@0.0.0 No repository field.
+6 warn package.json chat-example@0.0.0 No license field.
+7 verbose installManyTop reading scoped package data from /home/ubuntu/workspace/node_modules/express/package.json
+8 verbose installManyTop reading scoped package data from /home/ubuntu/workspace/node_modules/moment/package.json
+9 verbose installManyTop reading scoped package data from /home/ubuntu/workspace/node_modules/tipsy/package.json
+10 info package.json tipsy@1.0.0 No license field.
+11 info package.json express@3.2.6 No license field.
+12 verbose readDependencies loading dependencies from /home/ubuntu/workspace/package.json
+13 silly cache add args [ 'datetimeRangePicker', null ]
+14 verbose cache add spec datetimeRangePicker
+15 silly cache add parsed spec Result {
+15 silly cache add   raw: 'datetimeRangePicker',
+15 silly cache add   scope: null,
+15 silly cache add   name: 'datetimeRangePicker',
+15 silly cache add   rawSpec: '',
+15 silly cache add   spec: 'latest',
+15 silly cache add   type: 'tag' }
+16 silly addNamed datetimeRangePicker@latest
+17 verbose addNamed "latest" is being treated as a dist-tag for datetimeRangePicker
+18 info addNameTag [ 'datetimeRangePicker', 'latest' ]
+19 silly mapToRegistry name datetimeRangePicker
+20 silly mapToRegistry using default registry
+21 silly mapToRegistry registry https://registry.npmjs.org/
+22 silly mapToRegistry data Result {
+22 silly mapToRegistry   raw: 'datetimeRangePicker',
+22 silly mapToRegistry   scope: null,
+22 silly mapToRegistry   name: 'datetimeRangePicker',
+22 silly mapToRegistry   rawSpec: '',
+22 silly mapToRegistry   spec: 'latest',
+22 silly mapToRegistry   type: 'tag' }
+23 silly mapToRegistry uri https://registry.npmjs.org/datetimeRangePicker
+24 verbose addNameTag registry:https://registry.npmjs.org/datetimeRangePicker not in flight; fetching
+25 verbose request uri https://registry.npmjs.org/datetimeRangePicker
+26 verbose request no auth needed
+27 info attempt registry request try #1 at 1:56:11 AM
+28 verbose request id e4121fec601ee760
+29 http request GET https://registry.npmjs.org/datetimeRangePicker
+30 http 404 https://registry.npmjs.org/datetimeRangePicker
+31 verbose headers { 'content-type': 'application/json',
+31 verbose headers   'cache-control': 'max-age=0',
+31 verbose headers   'content-length': '2',
+31 verbose headers   'accept-ranges': 'bytes',
+31 verbose headers   date: 'Sat, 03 Sep 2016 01:56:12 GMT',
+31 verbose headers   via: '1.1 varnish',
+31 verbose headers   age: '0',
+31 verbose headers   connection: 'keep-alive',
+31 verbose headers   'x-served-by': 'cache-ord1745-ORD',
+31 verbose headers   'x-cache': 'MISS',
+31 verbose headers   'x-cache-hits': '0',
+31 verbose headers   'x-timer': 'S1472867772.236712,VS0,VE346',
+31 verbose headers   vary: 'Accept-Encoding' }
+32 silly get cb [ 404,
+32 silly get   { 'content-type': 'application/json',
+32 silly get     'cache-control': 'max-age=0',
+32 silly get     'content-length': '2',
+32 silly get     'accept-ranges': 'bytes',
+32 silly get     date: 'Sat, 03 Sep 2016 01:56:12 GMT',
+32 silly get     via: '1.1 varnish',
+32 silly get     age: '0',
+32 silly get     connection: 'keep-alive',
+32 silly get     'x-served-by': 'cache-ord1745-ORD',
+32 silly get     'x-cache': 'MISS',
+32 silly get     'x-cache-hits': '0',
+32 silly get     'x-timer': 'S1472867772.236712,VS0,VE346',
+32 silly get     vary: 'Accept-Encoding' } ]
+33 verbose stack Error: Registry returned 404 for GET on https://registry.npmjs.org/datetimeRangePicker
+33 verbose stack     at makeError (/home/ubuntu/.nvm/versions/node/v4.4.5/lib/node_modules/npm/node_modules/npm-registry-client/lib/request.js:264:12)
+33 verbose stack     at CachingRegistryClient.<anonymous> (/home/ubuntu/.nvm/versions/node/v4.4.5/lib/node_modules/npm/node_modules/npm-registry-client/lib/request.js:242:14)
+33 verbose stack     at Request._callback (/home/ubuntu/.nvm/versions/node/v4.4.5/lib/node_modules/npm/node_modules/npm-registry-client/lib/request.js:172:14)
+33 verbose stack     at Request.self.callback (/home/ubuntu/.nvm/versions/node/v4.4.5/lib/node_modules/npm/node_modules/request/request.js:200:22)
+33 verbose stack     at emitTwo (events.js:87:13)
+33 verbose stack     at Request.emit (events.js:172:7)
+33 verbose stack     at Request.<anonymous> (/home/ubuntu/.nvm/versions/node/v4.4.5/lib/node_modules/npm/node_modules/request/request.js:1067:10)
+33 verbose stack     at emitOne (events.js:82:20)
+33 verbose stack     at Request.emit (events.js:169:7)
+33 verbose stack     at IncomingMessage.<anonymous> (/home/ubuntu/.nvm/versions/node/v4.4.5/lib/node_modules/npm/node_modules/request/request.js:988:12)
+34 verbose statusCode 404
+35 verbose pkgid datetimeRangePicker
+36 verbose cwd /home/ubuntu/workspace
+37 error Linux 4.2.0-c9
+38 error argv "/home/ubuntu/.nvm/versions/node/v4.4.5/bin/node" "/home/ubuntu/.nvm/versions/node/v4.4.5/bin/npm" "install" "datetimeRangePicker"
+39 error node v4.4.5
+40 error npm  v2.15.5
+41 error code E404
+42 error 404 Registry returned 404 for GET on https://registry.npmjs.org/datetimeRangePicker
+42 error 404
+42 error 404 'datetimeRangePicker' is not in the npm registry.
+42 error 404 Your package name is not valid, because
+42 error 404
+42 error 404  1. name can no longer contain capital letters
+42 error 404 It was specified as a dependency of 'chat-example'
+42 error 404
+42 error 404 Note that you can also install from a
+42 error 404 tarball, folder, http url, or git url.
+43 verbose exit [ 1, true ]
