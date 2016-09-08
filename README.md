@@ -7,7 +7,7 @@
     ----------------------------------------------------------------- 
 
 
-Welcome to your Angular.js project on Cloud9 IDE!
+Welcome to this MEAN (Angular.js, Node.js) project built using Cloud9 IDE!
 
 This Project is meant to Visualize the commit Propagation in the super-repository of Linux (Linus Torvalds) in 2012.
 
