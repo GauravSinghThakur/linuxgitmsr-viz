@@ -7,9 +7,9 @@
     ----------------------------------------------------------------- 
 
 
-Welcome to your Node.js project on Cloud9 IDE!
+Welcome to your Angular.js project on Cloud9 IDE!
 
-This chat example showcases how to use `socket.io` with a static `express` server.
+This Project is meant to Visualize the commit Propagation in the super-repository of Linux (Linus Torvalds) in 2012.
 
 ## Running the server
 
@@ -19,4 +19,7 @@ This chat example showcases how to use `socket.io` with a static `express` serve
 
     $ node server.js
 
-Once the server is running, open the project in the shape of 'https://projectname-username.c9.io/'. As you enter your name, watch the Users list (on the left) update. Once you press Enter or Send, the message is shared with all connected clients.
+Once the server is running, open the project in the shape of 'https://myproject-gauravsinghthakur.c9users.io/#/'.
+Search for a Commit ID (Merge) in the linux repo and click to open the visualization to view the commit propagation
+through several repositories for that merge!
+
