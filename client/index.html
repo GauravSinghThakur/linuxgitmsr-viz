@@ -151,13 +151,13 @@
                   
                     z++;
                 }
-                console.log(pages);
+                //console.log(pages);
                 
                 $scope.query = {}; 
                 $scope.queryBy = '$';
                 $scope.pages = pages;
                 $scope.DateFilter = function () {
-                    console.log("dateeeeeeeeeeee hellooooooooo");
+                    //console.log("dateeeeeeeeeeee hellooooooooo");
                 };
 
                  
@@ -176,8 +176,6 @@
             commitsJson.commitInfo.success(function(data) {
                 var mcid = [];
                 mcid = data.commitInfo[$routeParams.commitId];
-                
-                
                 
                 var cid = [];
                 var repo = [];
@@ -219,6 +217,45 @@
                 repos[repos.length] = "linus/linus";
                 var comdates = comdate.unique();
                 var merges = mnextmerge.unique();
+                 
+                var erepo = repo[i-1];
+                function endCids(){
+                    var id = 0;
+                    var ecid = [];
+                    for(var t=0; t<i; t++){
+                        if(mnext.indexOf(cid[t])==-1 && repo[t] != erepo){
+                            ecid[id] = cid[t];
+                            id++;
+                        }
+                    }
+                    return ecid;
+                }
+                var ecids = endCids();
+                
+                function eMergeDates(){
+                    var emergedate = [];
+                    var id=0;
+                    var flag = true;
+                    for(var t=0; t<ecids.length; t++){
+                            var indecid = cid.indexOf(ecids[t]);
+                            var emnextmerge = mnextmerge[indecid];
+                            var indemnextmerge = cid.indexOf(emnextmerge);
+                            while(flag){
+                                if (repo[indemnextmerge]=erepo){
+                                    flag = false;
+                                    emergedate[id]=comdate[indemnextmerge];
+                                    id++;
+                                }
+                                else {
+                                    flag = true;
+                                    indemnextmerge = cid.indexOf(mnextmerge[indemnextmerge]);
+                                }
+                            }
+                            flag=true;
+                        }
+                        return emergedate;
+                    }
+                var emergedates = eMergeDates();
                 
                 $scope.cid = cid;
                 $scope.repo = repos;
@@ -317,7 +354,7 @@
                     
                     var bandSize = yScale(repos[1])/2;
                     
-                    console.log(bandSize,repos,comdate);
+                    //console.log(bandSize,repos,comdate);
                       
                       var comLen = comdate.length;
                       var k = 0, l=0, nextInd=1;
@@ -428,6 +465,7 @@
                              .attr("x1", function(d) { return xScale(d.comdate); })
                              .attr("x2", function(d){ if(d.mnext==""){return 0;} else {return xScale(comdate[cid.indexOf(d.mnext)]);} });
                             
+                            console.log(ecids+"..."+emergedates+"..."+erepo+"..."+ecids.length+"..."+emergedates.length);
                             // svg.select("path.area").attr("d", area);
                             // svg.select("path.line").attr("d", line);
                         }        

@@ -156,10 +156,12 @@
                     cid[i]= mcid[i].cid;
                     repo[i] = mcid[i].repo;
                     comdate[i] = new Date(mcid[i].comdate);
+                    
                     if(i==0){
                         mcidlinus[0] = mcid[i].mcidlinus;
                         mwhen[0] = new Date(mcid[i].mwhen);
                     }
+                    
                     repoOpp[i] = mcid[len].repo;
                     len--;
                     i++;
@@ -172,6 +174,19 @@
                 repos[repos.length] = "linus/linus";
                 var comdates = comdate.unique();
                 var merges = mnextmerge.unique();
+                
+                var erepo = repo[i-1];
+                var ecids = function(){
+                    var id = 0;
+                    var ecid = [];
+                    for(var t=0; t<i; t++){
+                        if(cid.indexOf(mnext[t])==-1){
+                            ecid[id] = mnext[t];
+                            id++;
+                        }
+                    }
+                    return ecid;
+                };
                 
                 $scope.cid = cid;
                 $scope.repo = repos;
@@ -189,6 +204,7 @@
                 
                 $scope.tree = function (scope, element, attrs){
                      
+                    console.log(ecids);
                     
                     var margin = {top: 10, right: 10, bottom: 100, left: 40},
                         margin2 = {top: 430, right: 10, bottom: 20, left: 40},
