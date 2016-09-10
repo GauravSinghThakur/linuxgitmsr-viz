@@ -231,6 +231,7 @@
                     return ecid;
                 }
                 var ecids = endCids();
+                //var tempecids = endCids();
                 
                 function eMergeDates(){
                     var emergedate = [];
@@ -238,17 +239,17 @@
                     var flag = true;
                     for(var t=0; t<ecids.length; t++){
                             var indecid = cid.indexOf(ecids[t]);
-                            var emnextmerge = mnextmerge[indecid];
-                            var indemnextmerge = cid.indexOf(emnextmerge);
+                            var emnext = mnext[indecid];
+                            var indemnext = cid.indexOf(emnext);
                             while(flag){
-                                if (repo[indemnextmerge]=erepo){
-                                    flag = false;
-                                    emergedate[id]=comdate[indemnextmerge];
-                                    id++;
+                                if (repo[indemnext]!=erepo){
+                                    indemnext = cid.indexOf(mnext[indemnext]);
+                                    continue;
                                 }
                                 else {
-                                    flag = true;
-                                    indemnextmerge = cid.indexOf(mnextmerge[indemnextmerge]);
+                                    flag = false;
+                                    emergedate[id] = comdate[indemnext];
+                                    id++;
                                 }
                             }
                             flag=true;
@@ -257,6 +258,73 @@
                     }
                 var emergedates = eMergeDates();
                 
+                var tempedates = eMergeDates();
+                var date_sort_asc = function (date1, date2) {
+                  if (date1 > date2) return 1;
+                  if (date1 < date2) return -1;
+                  return 0;
+                };
+                var sortedemergedates = tempedates.sort(date_sort_asc);//.unique();
+                
+                var sortedEcid = function() {
+                    var flag = 0;
+                    var sortedecid = [];
+                    for(var t=0; t<sortedemergedates.length; t++){
+                        if(t!=0){
+                            if(sortedemergedates[t]==sortedemergedates[t-1]){
+                                flag++;
+                            }else{
+                                flag = 0;
+                            }
+                        }
+                        var tempind;
+                        for(var k=0; k<=flag; k++){
+                            if(k==0){
+                                tempind = emergedates.indexOf(sortedemergedates[t]);
+                            }else{
+                                tempind = emergedates.indexOf(sortedemergedates[t],tempind+1);
+                            }
+                        }
+                        sortedecid[t]=ecids[tempind];
+                    }
+                    return sortedecid;
+                };
+                var sortedecids = sortedEcid();
+                
+                // var repoOrder = function() {
+                //     var id=0;
+                //     var orderedrepo = [];
+                //     var flag=true;
+                //     for(var t=0; t<sortedecids.length; t++){
+                //         var indecid = cid.indexOf(sortedecids[t]);
+                //         var emnext = mnext[indecid];
+                //         var indemnext = cid.indexOf(mnext[emnext]);
+                       
+                //         while(flag){
+                //             if(repo[indemnext]!=erepo && orderedrepo.indexOf(repo[indemnext])==-1){
+                //               orderedrepo[id] = repo[indecid];
+                //               id++;
+                //               indemnext = cid.indexOf(mnext[indemnext]);
+                //             }
+                //             else if(repo[indemnext]==erepo && orderedrepo.indexOf(repo[indemnext])==-1) {
+                //                 orderedrepo[id] = repo[indecid];
+                //                 id++;
+                //                 flag = false;
+                //             }
+                //             else{
+                //                 flag = false;
+                //             }
+                //         }
+                //         flag=true;
+                //     }
+                //     return orderedrepo;
+                // }
+                // var temporderedrepos = repoOrder();
+                // var orderedrepos = temporderedrepos.reverse();
+                // orderedrepos[orderedrepos.length]=erepo;
+                // orderedrepos[orderedrepos.length]="linus/linus";
+                
+                var orderedrepos = repos;
                 $scope.cid = cid;
                 $scope.repo = repos;
                 $scope.comdate = comdates;
@@ -319,7 +387,7 @@
                     
                     var yDom = function(){
                           var arr = [];
-                          for(var i = 0; i<repos.length; i++){
+                          for(var i = 0; i<orderedrepos.length; i++){
                               arr[i] = i+1;
                           }
                           return arr;
@@ -345,7 +413,7 @@
                         .ticks(10)
                         //.tickFormat(d3.format("s"))
                          .tickValues(yDom)
-                        .tickFormat(function(d,i){ return repos[i]; })
+                        .tickFormat(function(d,i){ return orderedrepos[i]; })
                         .outerTickSize(0);
                         
                       xAxisG.call(xAxis);
@@ -375,7 +443,7 @@
                         .enter()
                         .append("circle")
                         .attr("cx", function(d) { if (merges.indexOf(d.cid)==-1) { return xScale(d.comdate); } else{return -100;} } )
-                        .attr("cy", function(d) { if (merges.indexOf(d.cid)==-1) { return yScale(repos.indexOf(d.repo)+1);} else{return -100;} })
+                        .attr("cy", function(d) { if (merges.indexOf(d.cid)==-1) { return yScale(orderedrepos.indexOf(d.repo)+1);} else{return -100;} })
                         .attr("r", 10)
                         .attr("stroke", function(d) { return colorScale(d.repo); })
                         .attr("stroke-width", 1)
@@ -400,7 +468,7 @@
                         .data(drawData)
                         .enter().append("rect")
                         .attr("x", function(d) { if (merges.indexOf(d.cid)!=-1) { return xScale(d.comdate); } else{return -100;} } )
-                        .attr("y", function(d) { if (merges.indexOf(d.cid)!=-1) { return yScale(repos.indexOf(d.repo)+1);} else{return -100;} })
+                        .attr("y", function(d) { if (merges.indexOf(d.cid)!=-1) { return yScale(orderedrepos.indexOf(d.repo)+1);} else{return -100;} })
                         .attr("width", 20)
                         .attr("height", 20)
                         .attr("stroke", "black")
@@ -426,9 +494,9 @@
                             .data(drawData)
                             .enter().append("line")
                             .attr("x1", function(d){ return xScale(d.comdate); })
-                            .attr("y1", function(d){ return yScale(repos.indexOf(d.repo)+1); })//+bandSize)
+                            .attr("y1", function(d){ return yScale(orderedrepos.indexOf(d.repo)+1); })//+bandSize)
                             .attr("x2", function(d){ if(d.mnext==""){return 0;} else {return xScale(comdate[cid.indexOf(d.mnext)]);} }) 
-                            .attr("y2", function(d){ if(d.mnext==""){return yScale(repos.indexOf("linus/linus")+1); } else { return yScale(repos.indexOf(repo[cid.indexOf(d.mnext)])+1); }})
+                            .attr("y2", function(d){ if(d.mnext==""){return yScale(orderedrepos.indexOf("linus/linus")+1); } else { return yScale(orderedrepos.indexOf(repo[cid.indexOf(d.mnext)])+1); }})
                             .attr("stroke", function(d) { return colorScale(d.repo); })
                             .attr("stroke-width", 3)
                             .on("mouseover", function (d) {                                  
@@ -465,10 +533,9 @@
                              .attr("x1", function(d) { return xScale(d.comdate); })
                              .attr("x2", function(d){ if(d.mnext==""){return 0;} else {return xScale(comdate[cid.indexOf(d.mnext)]);} });
                             
-                            console.log(ecids+"..."+emergedates+"..."+erepo+"..."+ecids.length+"..."+emergedates.length);
                             // svg.select("path.area").attr("d", area);
                             // svg.select("path.line").attr("d", line);
-                        }        
+                            console.log(ecids+"...\n"+sortedecids+"...\n"+emergedates+"...\n"+sortedemergedates+"...\n"+erepo+"...\n"+ecids.length+"..."+sortedemergedates.length+"...\n"+repos+"...\n"+orderedrepos);                    }        
                                 
              };
             });
