@@ -98,12 +98,16 @@
     
         
         //*****************APP*******************
-        //var urlBase = '/DemoPartials/';
+        // Defining app variable named samplesModule;
         var samplesModule = angular.module('samples', ['ngRoute']);
 
        
         
         //*****************CONFIG*******************
+        // Here we route to the commitInfo.html page which would load the {{tree}} variable(function)
+        // Each commit generates a different tree based on the data corresponding to its index.
+        // On clicking a commit from the super-repository of Linux in the home page its index
+        // gets stored in the commitId variable which is further used to get the data in samplesModule.controller. 
         samplesModule.config(function($routeProvider) {
         $routeProvider.
           when('/', {
@@ -139,8 +143,12 @@
         // });
 
         //*****************CONTROLLER*******************
+        // Controller helps in binding the data. 
+        // Here we define variables with the $scope which we can then directly use with our HTML elements. 
         samplesModule.controller('samplesController', function (commitsJson, $scope, $templateCache, $http, $location, $routeParams) {
             
+            // Here we get the data for the home page using the commitsJson factory from commits.json file.
+            // It has the list of commits(merges) in the Linux super-repository, commit dates & logs.
             commitsJson.commits.success(function(cdata) {
                 var z =0;
                 var pages = [];
@@ -165,6 +173,7 @@
             
             $scope.commitId = $routeParams.commitId;
             
+            // returns unique elements for a given array
             Array.prototype.unique = function() {
                 var a = [];
                 for (var i=0, l=this.length; i<l; i++)
@@ -173,8 +182,11 @@
                 return a;
             };
                         
+            // Here we get the data for the home page using the commitsJson factory from commitInfo.json file.
+            // It has all the data for all the commits.
             commitsJson.commitInfo.success(function(data) {
                 var mcid = [];
+                // Only the data for a given merge selected based on its index from the JSON.
                 mcid = data.commitInfo[$routeParams.commitId];
                 
                 var cid = [];
@@ -365,7 +377,11 @@
                 // });
                 // csv.unshift(fields);
                 
-                
+                // The visualization is generated within the $scope.tree function.
+                // The {{tree}} variable is used in the commitInfo.html page to bind the data
+                // for the selected commit and thus we view a different visualization each time 
+                // when the commitInfo.html page is loaded.
+                // D3 library is used.
                 $scope.tree = function (scope, element, attrs){
                     
                     var outerWidth = 1500;
@@ -469,10 +485,24 @@
                         .data(drawData)
                         .enter()
                         .append("circle")
-                        .attr("cx", function(d) { if (merges.indexOf(d.cid)==-1) { return xScale(d.comdate); } else{return -100;} } )
-                        .attr("cy", function(d) { if (merges.indexOf(d.cid)==-1) { return yScale(orderedrepos.indexOf(d.repo)+1);} else{return -100;} })
+                        .attr("cx", function(d) { 
+                            if (merges.indexOf(d.cid)==-1) { 
+                                return xScale(d.comdate);
+                                
+                            } else{
+                                return -100;
+                            } } )
+                        .attr("cy", function(d) { 
+                            if (merges.indexOf(d.cid)==-1) { 
+                                return yScale(orderedrepos.indexOf(d.repo)+1);
+                                
+                            } else{
+                                return -100;
+                            } })
                         .attr("r", 10)
-                        .attr("stroke", function(d) { return colorScale(d.repo); })
+                        .attr("stroke", function(d) { 
+                            return colorScale(d.repo); 
+                        })
                         .attr("stroke-width", 1)
                         .attr("fill", "none")
                         .on("click", function (d){
@@ -487,15 +517,28 @@
                             	.style("stroke-width", 1);
                             })
                         .append("svg:title")
-                        .text(function(d) { return "Commit ID: \t"+d.cid+"\nNext Commit: \t"+d.mnext+"\nNext Merge: \t"+d.mnextmerge+"\nCommit Date: \t"+d.comdate+"\nRepository: \t"+d.repo; });
+                        .text(function(d) {
+                            return "Commit ID: \t"+d.cid+"\nNext Commit: \t"+d.mnext+"\nNext Merge: \t"+d.mnextmerge+"\nCommit Date: \t"+d.comdate+"\nRepository: \t"+d.repo; 
+                        });
                               
                         
                       g.select("#figure")//.attr("clip-path", "url(#clip)")
                         .selectAll("rect")
                         .data(drawData)
                         .enter().append("rect")
-                        .attr("x", function(d) { if (merges.indexOf(d.cid)!=-1) { return xScale(d.comdate); } else{return -100;} } )
-                        .attr("y", function(d) { if (merges.indexOf(d.cid)!=-1) { return yScale(orderedrepos.indexOf(d.repo)+1);} else{return -100;} })
+                        .attr("x", function(d) {
+                            if (merges.indexOf(d.cid)!=-1) {
+                                return xScale(d.comdate); 
+                                
+                            } else{return -100;
+                            } } )
+                        .attr("y", function(d) {
+                            if (merges.indexOf(d.cid)!=-1) {
+                                return yScale(orderedrepos.indexOf(d.repo)+1);
+                                
+                            } else{
+                                return -100;
+                            } })
                         .attr("width", 20)
                         .attr("height", 20)
                         .attr("stroke", "black")
@@ -508,23 +551,45 @@
                           		d3.select(this)                          
                             	.style("stroke-width", 1);
                             })
-                        .attr("fill", function(d) { return colorScale(d.repo); })
+                        .attr("fill", function(d) {
+                            return colorScale(d.repo); 
+                        })
                         .on("click", function (d){
                             window.open("https://github.com/torvalds/linux/commit/"+d.cid, '_blank');
                          })
                         .append("svg:title")
-                        .text(function(d) { return "Commit ID: \t"+d.cid+"\nNext Commit: \t"+d.mnext+"\nNext Merge: \t"+d.mnextmerge+"\nCommit Date: \t"+d.comdate+"\nRepository: \t"+d.repo; });
+                        .text(function(d) {
+                            return "Commit ID: \t"+d.cid+"\nNext Commit: \t"+d.mnext+"\nNext Merge: \t"+d.mnextmerge+"\nCommit Date: \t"+d.comdate+"\nRepository: \t"+d.repo;
+                        });
                         
                         
                        g.select("#figure")
                             .selectAll("line")
                             .data(drawData)
                             .enter().append("line")
-                            .attr("x1", function(d){ return xScale(d.comdate); })
-                            .attr("y1", function(d){ return yScale(orderedrepos.indexOf(d.repo)+1); })//+bandSize)
-                            .attr("x2", function(d){ if(d.mnext==""){return 0;} else {return xScale(comdate[cid.indexOf(d.mnext)]);} }) 
-                            .attr("y2", function(d){ if(d.mnext==""){return yScale(orderedrepos.indexOf("linus/linus")+1); } else { return yScale(orderedrepos.indexOf(repo[cid.indexOf(d.mnext)])+1); }})
-                            .attr("stroke", function(d) { return colorScale(d.repo); })
+                            .attr("x1", function(d){
+                                return xScale(d.comdate);
+                            })
+                            .attr("y1", function(d){
+                                return yScale(orderedrepos.indexOf(d.repo)+1);
+                            })//+bandSize)
+                            .attr("x2", function(d){
+                                if(d.mnext==""){
+                                    return 0;
+                                    
+                                } else {
+                                    return xScale(comdate[cid.indexOf(d.mnext)]);
+                                } }) 
+                            .attr("y2", function(d){
+                                if(d.mnext==""){
+                                    return yScale(orderedrepos.indexOf("linus/linus")+1); 
+                                    
+                                } else { 
+                                    return yScale(orderedrepos.indexOf(repo[cid.indexOf(d.mnext)])+1);
+                                }})
+                            .attr("stroke", function(d) {
+                                return colorScale(d.repo);
+                            })
                             .attr("stroke-width", 3)
                             .on("mouseover", function (d) {                                  
                           		d3.select(this)                          
@@ -535,7 +600,9 @@
                             	.style("stroke-width", 3);
                             })
                             .append("svg:title")
-                            .text(function(d) { return ""+d.repo; });
+                            .text(function(d) {
+                                return ""+d.repo; 
+                            });
                    
                      var zoom = d3.behavior.zoom()
                                   .x(xScale)
@@ -549,16 +616,27 @@
                             svg.select("g.x.axis").call(xAxis);
                             var circles =  g.select("#figure").selectAll("circle");
                               circles
-                             .attr("cx", function(d) { return xScale(d.comdate); });
+                             .attr("cx", function(d) { 
+                                 return xScale(d.comdate); 
+                             });
                              
                             var rectangles =  g.select("#figure").selectAll("rect");
                               rectangles
-                             .attr("x", function(d) { return xScale(d.comdate); });
+                             .attr("x", function(d) {
+                                 return xScale(d.comdate); 
+                             });
                             
                              var lines =  g.select("#figure").selectAll("line");
                               lines
-                             .attr("x1", function(d) { return xScale(d.comdate); })
-                             .attr("x2", function(d){ if(d.mnext==""){return 0;} else {return xScale(comdate[cid.indexOf(d.mnext)]);} });
+                             .attr("x1", function(d) {
+                                 return xScale(d.comdate); 
+                             })
+                             .attr("x2", function(d){
+                                 if(d.mnext==""){
+                                     return 0;
+                                     
+                                 } else {return xScale(comdate[cid.indexOf(d.mnext)]);
+                                 } });
                             
                             // svg.select("path.area").attr("d", area);
                             // svg.select("path.line").attr("d", line);
@@ -591,7 +669,9 @@
             //     .error(function(err) { 
             //       return err; 
             //     }); 
-            //*****************FACTORY*******************    
+            //*****************FACTORY*******************
+            // Here we define a factory named commitsJson which can be directly used in our samplesController.
+            // The factory is a service that loads the data from the json file into a variable.
             samplesModule.factory('commitsJson', ['$http', function($http) { 
                 return {
                     commits: $http.get('/app/data/commits.json')
