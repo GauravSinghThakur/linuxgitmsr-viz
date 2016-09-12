@@ -291,40 +291,67 @@
                 };
                 var sortedecids = sortedEcid();
                 
-                // var repoOrder = function() {
-                //     var id=0;
-                //     var orderedrepo = [];
-                //     var flag=true;
-                //     for(var t=0; t<sortedecids.length; t++){
-                //         var indecid = cid.indexOf(sortedecids[t]);
-                //         var emnext = mnext[indecid];
-                //         var indemnext = cid.indexOf(mnext[emnext]);
-                       
-                //         while(flag){
-                //             if(repo[indemnext]!=erepo && orderedrepo.indexOf(repo[indemnext])==-1){
-                //               orderedrepo[id] = repo[indecid];
-                //               id++;
-                //               indemnext = cid.indexOf(mnext[indemnext]);
-                //             }
-                //             else if(repo[indemnext]==erepo && orderedrepo.indexOf(repo[indemnext])==-1) {
-                //                 orderedrepo[id] = repo[indecid];
-                //                 id++;
-                //                 flag = false;
-                //             }
-                //             else{
-                //                 flag = false;
-                //             }
-                //         }
-                //         flag=true;
-                //     }
-                //     return orderedrepo;
-                // }
-                // var temporderedrepos = repoOrder();
-                // var orderedrepos = temporderedrepos.reverse();
-                // orderedrepos[orderedrepos.length]=erepo;
-                // orderedrepos[orderedrepos.length]="linus/linus";
+                var repoOrder = function() {
+                    var orderedrepo = [];
+                    var oid = 0;
+                    for(var t=0; t<sortedecids.length; t++){
+                            var id=0;
+                            var temporderedrepo = [];
+                            var eflag = 0;
+                            var indecid = cid.indexOf(sortedecids[t]);
+                            var emnext = mnext[indecid];
+                            var indemnext = cid.indexOf(emnext);
+                            
+                            while(1){
+                                
+                                if(eflag==0){
+                                        if(repo[indemnext]!=erepo && !(orderedrepo.indexOf(repo[indecid])!=-1 || temporderedrepo.indexOf(repo[indecid])!=-1)){
+                                            temporderedrepo[id]=repo[indecid];
+                                            id++;
+                                            
+                                        }else if(repo[indemnext]==erepo){
+                                           if(!(orderedrepo.indexOf(repo[indecid])!=-1 || temporderedrepo.indexOf(repo[indecid])!=-1)){
+                                                temporderedrepo[id]=repo[indecid];
+                                                id++;
+                                           }
+                                            break;
+                                        }
+                                        
+                                        indecid = cid.indexOf(mnext[indecid]);
+                                        indemnext = cid.indexOf(mnext[indemnext]);
+                                        eflag=1;
+                                        
+                                }else{
+                                    if(repo[indemnext]!=erepo && !(orderedrepo.indexOf(repo[indecid])!=-1 || temporderedrepo.indexOf(repo[indecid])!=-1)){
+                                            temporderedrepo[id]=repo[indecid];
+                                            id++;
+                                            
+                                        }else if(repo[indemnext]==erepo){
+                                           if(!(orderedrepo.indexOf(repo[indecid])!=-1 || temporderedrepo.indexOf(repo[indecid])!=-1)){
+                                                temporderedrepo[id]=repo[indecid];
+                                                id++;
+                                           }
+                                            break;
+                                        }
+                                    indecid = cid.indexOf(mnext[indecid]);
+                                    indemnext = cid.indexOf(mnext[indemnext]);
+                                }
+                            }
+                            for(var x=temporderedrepo.length-1; x>=0; x--){
+                                orderedrepo[oid] = temporderedrepo[x];
+                                oid++;
+                            }
+                    }
+                        
+                        return orderedrepo;
+                };
                 
-                var orderedrepos = repos;
+                var temporderedrepos = repoOrder();
+                var orderedrepos = temporderedrepos.reverse();
+                orderedrepos[orderedrepos.length]=erepo;
+                orderedrepos[orderedrepos.length]="linus/linus";
+                
+                //var orderedrepos = repos;
                 $scope.cid = cid;
                 $scope.repo = repos;
                 $scope.comdate = comdates;
