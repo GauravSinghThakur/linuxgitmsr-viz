@@ -100,7 +100,6 @@
         //*****************APP*******************
         // Defining app variable named samplesModule;
         var samplesModule = angular.module('samples', ['ngRoute']);
-
        
         
         //*****************CONFIG*******************
@@ -141,7 +140,6 @@
         //         return arrayToReturn;
         //   };
         // });
-
         //*****************CONTROLLER*******************
         // Controller helps in binding the data. 
         // Here we define variables with the $scope which we can then directly use with our HTML elements. 
@@ -167,7 +165,6 @@
                 $scope.DateFilter = function () {
                     //console.log("dateeeeeeeeeeee hellooooooooo");
                 };
-
                  
             });
             
@@ -316,38 +313,20 @@
                             
                             while(1){
                                 
-                                if(eflag==0){
-                                        if(repo[indemnext]!=erepo && !(orderedrepo.indexOf(repo[indecid])!=-1 || temporderedrepo.indexOf(repo[indecid])!=-1)){
+                                if(repo[indemnext]!=erepo && !(orderedrepo.indexOf(repo[indecid])!=-1 || temporderedrepo.indexOf(repo[indecid])!=-1)){
                                             temporderedrepo[id]=repo[indecid];
                                             id++;
                                             
-                                        }else if(repo[indemnext]==erepo){
-                                           if(!(orderedrepo.indexOf(repo[indecid])!=-1 || temporderedrepo.indexOf(repo[indecid])!=-1)){
+                                }else if(repo[indemnext]==erepo){
+                                    if(!(orderedrepo.indexOf(repo[indecid])!=-1 || temporderedrepo.indexOf(repo[indecid])!=-1)){
                                                 temporderedrepo[id]=repo[indecid];
                                                 id++;
-                                           }
+                                    }
                                             break;
-                                        }
-                                        
-                                        indecid = cid.indexOf(mnext[indecid]);
-                                        indemnext = cid.indexOf(mnext[indemnext]);
-                                        eflag=1;
-                                        
-                                }else{
-                                    if(repo[indemnext]!=erepo && !(orderedrepo.indexOf(repo[indecid])!=-1 || temporderedrepo.indexOf(repo[indecid])!=-1)){
-                                            temporderedrepo[id]=repo[indecid];
-                                            id++;
-                                            
-                                        }else if(repo[indemnext]==erepo){
-                                           if(!(orderedrepo.indexOf(repo[indecid])!=-1 || temporderedrepo.indexOf(repo[indecid])!=-1)){
-                                                temporderedrepo[id]=repo[indecid];
-                                                id++;
-                                           }
-                                            break;
-                                        }
-                                    indecid = cid.indexOf(mnext[indecid]);
-                                    indemnext = cid.indexOf(mnext[indemnext]);
                                 }
+                                indecid = cid.indexOf(mnext[indecid]);
+                                indemnext = cid.indexOf(mnext[indemnext]);
+                            
                             }
                             for(var x=temporderedrepo.length-1; x>=0; x--){
                                 orderedrepo[oid] = temporderedrepo[x];
@@ -697,7 +676,6 @@
         // samplesModule.directive("commitTree", function(commitsJson, $scope, $routeParams){
         //   	function link(scope, element, attrs){
         //          var data = [1, 2, 3, 4, 5];
-
         //           var scale = d3.scale.linear()
         //             .domain([1, 5])   // Data space
         //             .range([0, 200]); // Pixel space
