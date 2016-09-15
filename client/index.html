@@ -232,7 +232,7 @@
                     var id = 0;
                     var ecid = [];
                     for(var t=0; t<i; t++){
-                        if(mnext.indexOf(cid[t])==-1 && repo[t] != erepo){
+                        if(mnext.indexOf(cid[t])==-1){ //&& repo[t] != erepo){
                             ecid[id] = cid[t];
                             id++;
                         }
@@ -245,23 +245,23 @@
                 function eMergeDates(){
                     var emergedate = [];
                     var id=0;
-                    var flag = true;
+                    
                     for(var t=0; t<ecids.length; t++){
                             var indecid = cid.indexOf(ecids[t]);
+                            //var firstindecid = cid.indexOf(ecids[t]);
                             var emnext = mnext[indecid];
                             var indemnext = cid.indexOf(emnext);
-                            while(flag){
-                                if (repo[indemnext]!=erepo){
-                                    indemnext = cid.indexOf(mnext[indemnext]);
+                            
+                            while(true){
+                                if (repo[indecid]==erepo){
+                                    emergedate[id] = comdate[indecid];
+                                    id++;
+                                    break;
+                                } else{
+                                    indecid = cid.indexOf(mnext[indecid]);
                                     continue;
                                 }
-                                else {
-                                    flag = false;
-                                    emergedate[id] = comdate[indemnext];
-                                    id++;
-                                }
                             }
-                            flag=true;
                         }
                         return emergedate;
                     }
@@ -303,39 +303,53 @@
                 var repoOrder = function() {
                     var orderedrepo = [];
                     var oid = 0;
+                    
                     for(var t=0; t<sortedecids.length; t++){
                             var id=0;
                             var temporderedrepo = [];
-                            var eflag = 0;
                             var indecid = cid.indexOf(sortedecids[t]);
-                            var emnext = mnext[indecid];
-                            var indemnext = cid.indexOf(emnext);
+                            var firstindecid = cid.indexOf(sortedecids[t]);
+                            //var emnext = mnext[indecid];
+                            //var indemnext = cid.indexOf(emnext);
                             
                             while(1){
                                 
-                                if(repo[indemnext]!=erepo && !(orderedrepo.indexOf(repo[indecid])!=-1 || temporderedrepo.indexOf(repo[indecid])!=-1)){
-                                            temporderedrepo[id]=repo[indecid];
-                                            id++;
-                                            
-                                }else if(repo[indemnext]==erepo){
-                                    if(!(orderedrepo.indexOf(repo[indecid])!=-1 || temporderedrepo.indexOf(repo[indecid])!=-1)){
-                                                temporderedrepo[id]=repo[indecid];
-                                                id++;
+                                if(t==0 && repo[firstindecid]==erepo){
+                                    if(mnext[indecid]==mcidlinus[0]){
+                                        break;
                                     }
-                                            break;
+                                    else if(repo[indecid]!=erepo && orderedrepo.indexOf(repo[indecid])==-1){
+                                            orderedrepo[oid] = repo[indecid];
+                                            oid++;
+                                    }
+                                    indecid = cid.indexOf(mnext[indecid]);
+                                    continue;
                                 }
+                                
+                                else if(repo[indecid]!=erepo && orderedrepo.indexOf(repo[indecid])==-1 && temporderedrepo.indexOf(repo[indecid])==-1){
+                                    temporderedrepo[id]=repo[indecid];
+                                    id++;
+                                    indecid = cid.indexOf(mnext[indecid]);
+                                    continue;
+                                }
+                                
+                                else if(repo[indecid]==erepo){
+                                    break;
+                                }
+                                
                                 indecid = cid.indexOf(mnext[indecid]);
-                                indemnext = cid.indexOf(mnext[indemnext]);
-                            
                             }
-                            for(var x=temporderedrepo.length-1; x>=0; x--){
-                                orderedrepo[oid] = temporderedrepo[x];
-                                oid++;
+                            
+                            if(repo[firstindecid]!=erepo){
+                                for(var x=temporderedrepo.length-1; x>=0; x--){
+                                    orderedrepo[oid] = temporderedrepo[x];
+                                    oid++;
+                                }    
                             }
                     }
                         
                         return orderedrepo;
-                };
+                };                
                 
                 var temporderedrepos = repoOrder();
                 var orderedrepos = temporderedrepos.reverse();
@@ -441,11 +455,6 @@
                       xAxisG.call(xAxis);
                       yAxisG.call(yAxis);
                     
-                    
-                    var bandSize = yScale(repos[1])/2;
-                    
-                    //console.log(bandSize,repos,comdate);
-                      
                       var comLen = comdate.length;
                       var k = 0, l=0, nextInd=1;
                    
@@ -619,7 +628,7 @@
                             
                             // svg.select("path.area").attr("d", area);
                             // svg.select("path.line").attr("d", line);
-                            console.log(ecids+"...\n"+sortedecids+"...\n"+emergedates+"...\n"+sortedemergedates+"...\n"+erepo+"...\n"+ecids.length+"..."+sortedemergedates.length+"...\n"+repos+"...\n"+orderedrepos);                    }        
+                            console.log(drawData[2].repo+"\n\n"+ecids+"...\n"+sortedecids+"...\n"+emergedates+"...\n"+sortedemergedates+"...\n"+erepo+"...\n"+ecids.length+"..."+sortedemergedates.length+"...\n"+repos+"...\n"+orderedrepos);                    }        
                                 
              };
             });
