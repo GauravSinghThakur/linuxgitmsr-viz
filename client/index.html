@@ -188,6 +188,7 @@
                 
                 var cid = [];
                 var repo = [];
+                var reponew = [];
                 var comdate = [];
                 var mwhen = [];
                 var mcidlinus = [];
@@ -201,29 +202,31 @@
                 
                 while (mcid[i]){
                     
-                    drawData.push({cid: mcid[i].cid, mnext: mcid[i].mnext, mnextmerge: mcid[i].mnextmerge, repo: mcid[i].repo, comdate: new Date(mcid[i].comdate)});
+                    drawData.push({cid: mcid[i].cid, mnext: mcid[i].mnext, mnextmerge: mcid[i].mnextmerge, repo: mcid[i].repo+"  ", comdate: new Date(mcid[i].comdate)});
                     
                     mnextmerge[i] = mcid[i].mnextmerge;
                     mnext[i] = mcid[i].mnext;
                     cid[i]= mcid[i].cid;
-                    repo[i] = mcid[i].repo;
+                    repo[i] = mcid[i].repo+"  ";
+                    reponew[i] = mcid[i].repo+"  ";
                     comdate[i] = new Date(mcid[i].comdate);
                     if(i==0){
                         mcidlinus[0] = mcid[i].mcidlinus;
                         mwhen[0] = new Date(mcid[i].mwhen);
                     }
-                    repoOpp[i] = mcid[len].repo;
+                    repoOpp[i] = mcid[len].repo+"  ";
                     len--;
                     i++;
                 }
                 
-                drawData.push({cid: mcidlinus[0], mnext: "", mnextmerge: "", repo: "linus/linus", comdate:  mwhen[0]});
+                drawData.push({cid: mcidlinus[0], mnext: "", mnextmerge: "", repo: "linus/linus  ", comdate:  mwhen[0]});
                 
                 cid[i] = mcidlinus[0];
-                repo[i] = "linus/linus";
+                repo[i] = "linus/linus  ";
+                reponew[i] = "linus/linus  "
                 comdate[i] = mwhen[0];
                 var repos = repoOpp.unique().reverse();
-                repos[repos.length] = "linus/linus";
+                repos[repos.length] = "linus/linus  ";
                 var comdates = comdate.unique();
                 var merges = mnextmerge.unique();
                  
@@ -300,61 +303,130 @@
                 };
                 var sortedecids = sortedEcid();
                 
+                var sortErepocid = function(){
+                    var id = 0;
+                    var sortedecid = [];
+                    var ind;
+                    
+                    for(var x=0; x<sortedecids.length; x++){
+                        ind = cid.indexOf(sortedecids[x]);
+                        if(repo[ind]==erepo){
+                            sortedecid[id] = sortedecids[x];
+                            id++;
+                        }
+                    }
+                    
+                    for(var y=0; y<sortedecids.length; y++){
+                        ind = cid.indexOf(sortedecids[y]);
+                        if(repo[ind]!=erepo){
+                            sortedecid[id] = sortedecids[y];
+                            id++;
+                        }
+                    }
+                    return sortedecid;
+                };
+                
+                sortedecids = sortErepocid();
+                
+                console.log(reponew);
                 var repoOrder = function() {
                     var orderedrepo = [];
                     var oid = 0;
+                    var branchMap = {};
+                    branchMap[erepo] = 0;
                     
                     for(var t=0; t<sortedecids.length; t++){
                             var id=0;
+                            var eflag=0;
                             var temporderedrepo = [];
                             var indecid = cid.indexOf(sortedecids[t]);
                             var firstindecid = cid.indexOf(sortedecids[t]);
-                            //var emnext = mnext[indecid];
-                            //var indemnext = cid.indexOf(emnext);
+                            var emnext = mnext[indecid];
+                            var indemnext = cid.indexOf(emnext);
                             
                             while(1){
                                 
-                                if(t==0 && repo[firstindecid]==erepo){
+                                if(repo[firstindecid]==erepo){
                                     if(mnext[indecid]==mcidlinus[0]){
                                         break;
                                     }
-                                    else if(repo[indecid]!=erepo && orderedrepo.indexOf(repo[indecid])==-1){
-                                            orderedrepo[oid] = repo[indecid];
-                                            oid++;
+                                    else if(repo[indecid]!=erepo && orderedrepo.indexOf(repo[indecid])==-1 && temporderedrepo.indexOf(repo[indecid])==-1){
+                                            temporderedrepo[id]=repo[indecid];
+                                            branchMap[repo[indecid]] = 0;
+                                            id++;
                                     }
                                     indecid = cid.indexOf(mnext[indecid]);
                                     continue;
                                 }
                                 
-                                else if(repo[indecid]!=erepo && orderedrepo.indexOf(repo[indecid])==-1 && temporderedrepo.indexOf(repo[indecid])==-1){
-                                    temporderedrepo[id]=repo[indecid];
-                                    id++;
-                                    indecid = cid.indexOf(mnext[indecid]);
+                                else if(eflag==0){
+                                    if(orderedrepo.indexOf(repo[indecid])==-1){
+                                        temporderedrepo[id]=repo[indecid];
+                                        branchMap[repo[indecid]] = 0;
+                                        id++;    
+                                    } 
+                                    else{
+                                            temporderedrepo[id] = repo[indecid].substring(0,repo[indecid].length-1)+(branchMap[repo[indecid]]+1);
+                                            branchMap[repo[indecid]]=branchMap[repo[indecid]]+1;
+                                            drawData[indecid].repo = temporderedrepo[id];
+                                            reponew[indecid] = temporderedrepo[id];
+                                            id++;
+                                    }
+                                    eflag=1;
                                     continue;
                                 }
                                 
-                                else if(repo[indecid]==erepo){
+                                else if(repo[indemnext]==erepo){
+                                    temporderedrepo[id] = repo[indemnext].substring(0,repo[indemnext].length-1)+(branchMap[repo[indemnext]]+1);
+                                    branchMap[repo[indemnext]]=branchMap[repo[indemnext]]+1;
+                                    drawData[indemnext].repo = temporderedrepo[id];
+                                    reponew[indemnext] = temporderedrepo[id];
                                     break;
                                 }
                                 
-                                indecid = cid.indexOf(mnext[indecid]);
+                                else if(repo[indecid]==repo[indemnext]){
+                                    if(reponew[indecid]!=reponew[indemnext]){
+                                        reponew[indemnext] = reponew[indecid];
+                                        drawData[indemnext].repo = reponew[indecid];
+                                    }
+                                    indecid = cid.indexOf(mnext[indecid]);
+                                    indemnext = cid.indexOf(mnext[indemnext]);
+                                    continue;
+                                }
+                                
+                                else if(repo[indecid]!=repo[indemnext]){
+                                    if(orderedrepo.indexOf(repo[indemnext])==-1){
+                                        temporderedrepo[id]=repo[indemnext];
+                                        branchMap[repo[indemnext]] = 0;
+                                    } 
+                                    else{
+                                            temporderedrepo[id] = repo[indemnext].substring(0,repo[indemnext].length-1)+(branchMap[repo[indemnext]]+1);
+                                            branchMap[repo[indemnext]]=branchMap[repo[indemnext]]+1;
+                                            drawData[indemnext].repo = temporderedrepo[id];
+                                            reponew[indemnext] = temporderedrepo[id];
+                                    }
+                                    id++; 
+                                    indecid = cid.indexOf(mnext[indecid]);
+                                    indemnext = cid.indexOf(mnext[indemnext]);
+                                    continue;
+                                }
+                                
                             }
+                            console.log(temporderedrepo);
+                            for(var x=temporderedrepo.length-1; x>=0; x--){
+                                orderedrepo[oid] = temporderedrepo[x];
+                                oid++;
+                            }    
                             
-                            if(repo[firstindecid]!=erepo){
-                                for(var x=temporderedrepo.length-1; x>=0; x--){
-                                    orderedrepo[oid] = temporderedrepo[x];
-                                    oid++;
-                                }    
-                            }
                     }
-                        
+                        console.log(sortedecids, branchMap, reponew);
                         return orderedrepo;
                 };                
                 
                 var temporderedrepos = repoOrder();
                 var orderedrepos = temporderedrepos.reverse();
                 orderedrepos[orderedrepos.length]=erepo;
-                orderedrepos[orderedrepos.length]="linus/linus";
+                orderedrepos[orderedrepos.length]="linus/linus  ";
                 
                 //var orderedrepos = repos;
                 $scope.cid = cid;
@@ -448,15 +520,15 @@
                       var yAxis = d3.svg.axis().scale(yScale).orient("left")
                         .ticks(10)
                         //.tickFormat(d3.format("s"))
-                         .tickValues(yDom)
+                        .tickValues(yDom)
                         .tickFormat(function(d,i){ return orderedrepos[i]; })
                         .outerTickSize(0);
                         
                       xAxisG.call(xAxis);
                       yAxisG.call(yAxis);
                     
-                      var comLen = comdate.length;
-                      var k = 0, l=0, nextInd=1;
+                    //   var comLen = comdate.length;
+                    //   var k = 0, l=0, nextInd=1;
                    
                       var clip = g.append("defs").append("svg:clipPath")
                         .attr("id", "clip")
@@ -479,14 +551,16 @@
                                 
                             } else{
                                 return -100;
-                            } } )
+                            }
+                        })
                         .attr("cy", function(d) { 
                             if (merges.indexOf(d.cid)==-1) { 
                                 return yScale(orderedrepos.indexOf(d.repo)+1);
                                 
                             } else{
                                 return -100;
-                            } })
+                            }
+                        })
                         .attr("r", 10)
                         .attr("stroke", function(d) { 
                             return colorScale(d.repo); 
@@ -518,15 +592,18 @@
                             if (merges.indexOf(d.cid)!=-1) {
                                 return xScale(d.comdate); 
                                 
-                            } else{return -100;
-                            } } )
+                            } else{
+                                return -100;
+                            }
+                        })
                         .attr("y", function(d) {
                             if (merges.indexOf(d.cid)!=-1) {
                                 return yScale(orderedrepos.indexOf(d.repo)+1);
                                 
                             } else{
                                 return -100;
-                            } })
+                            }
+                        })
                         .attr("width", 20)
                         .attr("height", 20)
                         .attr("stroke", "black")
@@ -567,14 +644,16 @@
                                     
                                 } else {
                                     return xScale(comdate[cid.indexOf(d.mnext)]);
-                                } }) 
+                                } 
+                            }) 
                             .attr("y2", function(d){
                                 if(d.mnext==""){
-                                    return yScale(orderedrepos.indexOf("linus/linus")+1); 
+                                    return yScale(orderedrepos.indexOf("linus/linus  ")+1); 
                                     
                                 } else { 
-                                    return yScale(orderedrepos.indexOf(repo[cid.indexOf(d.mnext)])+1);
-                                }})
+                                    return yScale(orderedrepos.indexOf(reponew[cid.indexOf(d.mnext)])+1);
+                                }
+                            })
                             .attr("stroke", function(d) {
                                 return colorScale(d.repo);
                             })
@@ -594,7 +673,7 @@
                    
                      var zoom = d3.behavior.zoom()
                                   .x(xScale)
-                                  //.y(yScale)
+                                  .y(yScale)
                                   .scaleExtent([0.1, 1000000])
                                   .on("zoom", draw);
                      
@@ -602,33 +681,76 @@
                      
                      function draw() {
                             svg.select("g.x.axis").call(xAxis);
+                            svg.select("g.y.axis").call(yAxis);
+                            
                             var circles =  g.select("#figure").selectAll("circle");
                               circles
                              .attr("cx", function(d) { 
-                                 return xScale(d.comdate); 
+                                if (merges.indexOf(d.cid)==-1) { 
+                                    return xScale(d.comdate);
+                                    
+                                } else{
+                                    return -100;
+                                }
+                             })
+                             .attr("cy", function(d) { 
+                                if (merges.indexOf(d.cid)==-1) { 
+                                    return yScale(orderedrepos.indexOf(d.repo)+1);
+                                    
+                                } else{
+                                    return -100;
+                                } 
                              });
                              
                             var rectangles =  g.select("#figure").selectAll("rect");
                               rectangles
                              .attr("x", function(d) {
-                                 return xScale(d.comdate); 
-                             });
+                                if (merges.indexOf(d.cid)!=-1) {
+                                    return xScale(d.comdate); 
+                                    
+                                } else{
+                                    return -100;
+                                }
+                            })
+                            .attr("y", function(d) {
+                                if (merges.indexOf(d.cid)!=-1) {
+                                    return yScale(orderedrepos.indexOf(d.repo)+1);
+                                    
+                                } else{
+                                    return -100;
+                                }
+                            });
                             
                              var lines =  g.select("#figure").selectAll("line");
                               lines
                              .attr("x1", function(d) {
                                  return xScale(d.comdate); 
                              })
+                             .attr("y1", function(d){
+                                return yScale(orderedrepos.indexOf(d.repo)+1);
+                            })
                              .attr("x2", function(d){
                                  if(d.mnext==""){
                                      return 0;
                                      
-                                 } else {return xScale(comdate[cid.indexOf(d.mnext)]);
-                                 } });
+                                 } else {
+                                     return xScale(comdate[cid.indexOf(d.mnext)]);
+                                 }
+                             })
+                            .attr("y2", function(d){
+                                if(d.mnext==""){
+                                    return yScale(orderedrepos.indexOf("linus/linus  ")+1); 
+                                    
+                                } else { 
+                                    return yScale(orderedrepos.indexOf(reponew[cid.indexOf(d.mnext)])+1);
+                                }
+                            });
                             
                             // svg.select("path.area").attr("d", area);
                             // svg.select("path.line").attr("d", line);
-                            console.log(drawData[2].repo+"\n\n"+ecids+"...\n"+sortedecids+"...\n"+emergedates+"...\n"+sortedemergedates+"...\n"+erepo+"...\n"+ecids.length+"..."+sortedemergedates.length+"...\n"+repos+"...\n"+orderedrepos);                    }        
+                            //console.log(drawData[2].repo+"\n\n"+ecids+"...\n"+sortedecids+"...\n"+emergedates+"...\n"+sortedemergedates+"...\n"+erepo+"...\n"+ecids.length+"..."+sortedemergedates.length+"...\n"+repos+"...\n"+orderedrepos);                    
+                            console.log(reponew+"\n\n"+repo+"\n\n"+orderedrepos);
+                     }        
                                 
              };
             });
