@@ -563,7 +563,7 @@
                         })
                         .attr("r", 10)
                         .attr("stroke", function(d) { 
-                            return colorScale(d.repo); 
+                            return colorScale(d.repo.substring(0,d.repo.length-2)); 
                         })
                         .attr("stroke-width", 1)
                         .attr("fill", "none")
@@ -617,7 +617,7 @@
                             	.style("stroke-width", 1);
                             })
                         .attr("fill", function(d) {
-                            return colorScale(d.repo); 
+                            return colorScale(d.repo.substring(0,d.repo.length-2)); 
                         })
                         .on("click", function (d){
                             window.open("https://github.com/torvalds/linux/commit/"+d.cid, '_blank');
@@ -655,7 +655,7 @@
                                 }
                             })
                             .attr("stroke", function(d) {
-                                return colorScale(d.repo);
+                                return colorScale(d.repo.substring(0,d.repo.length-2));
                             })
                             .attr("stroke-width", 3)
                             .on("mouseover", function (d) {                                  
