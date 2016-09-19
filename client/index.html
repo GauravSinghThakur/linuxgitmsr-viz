@@ -451,13 +451,13 @@
                     
                     var outerWidth = 1500;
                       var outerHeight = 900;
-                      var margin = { left: 450, top: 20, right: 20, bottom: 100 };
+                      var margin = { left: 350, top: 20, right: 20, bottom: 100 };
                 
                       var xAxisLabelText = "Commit Time";
                       var xAxisLabelOffset = 80;
                 
                       var yAxisLabelText = "Repos";
-                      var yAxisLabelOffset = 400;
+                      var yAxisLabelOffset = 300;
                 
                       var innerWidth  = outerWidth  - margin.left - margin.right;
                       var innerHeight = outerHeight - margin.top  - margin.bottom;
@@ -521,7 +521,7 @@
                       var colorScale = d3.scale.category20();
                       
                       var xAxis = d3.svg.axis().scale(xScale).orient("bottom")
-                        .ticks(5)
+                        .ticks(10)
                         //.tickFormat()
                         .outerTickSize(0);
                         
@@ -687,6 +687,9 @@
                                   .on("zoom", draw);
                      
                      svg.call(zoom);
+                     
+                     svg.select("g.x.axis").selectAll("text").style("font-size","15px");
+                     svg.select("g.y.axis").selectAll("text").style("font-size","15px");
                      
                      function draw() {
                             svg.select("g.x.axis").call(xAxis);
