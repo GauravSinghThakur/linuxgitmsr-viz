@@ -473,6 +473,14 @@
                         
                       var path = g.append("path")
                         .attr("class", "chart-line");
+                       
+                      var clipY = g.append("clipPath")
+                              .attr('id', 'clip-y-axis')
+                              .append('rect')
+                              .attr('x', - margin.left)
+                              .attr('y', 0)
+                              .attr('height', innerHeight)
+                              .attr('width', margin.left);    
                 
                       var xAxisG = g.append("g")
                         .attr("class", "x axis")
@@ -518,14 +526,15 @@
                         .outerTickSize(0);
                         
                       var yAxis = d3.svg.axis().scale(yScale).orient("left")
-                        .ticks(10)
+                        //.ticks(10)
                         //.tickFormat(d3.format("s"))
                         .tickValues(yDom)
                         .tickFormat(function(d,i){ return orderedrepos[i]; })
                         .outerTickSize(0);
                         
                       xAxisG.call(xAxis);
-                      yAxisG.call(yAxis);
+                      yAxisG.attr('clip-path', 'url(#clip-y-axis)')
+                            .call(yAxis);
                     
                     //   var comLen = comdate.length;
                     //   var k = 0, l=0, nextInd=1;
