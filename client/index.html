@@ -296,7 +296,7 @@
                         }
                         k++;
                     }
-                    if(mnext.indexOf(ecid)!=-1){
+                    if(mnext.indexOf(ecid)!=-1 && merges.indexOf(ecid)!=-1){
                         merge[ind] = ecid;        
                     }
                     return merge;
@@ -362,6 +362,8 @@
                                 temporderedrepo[id] = repo[indprev].substring(0,repo[indprev].length-1)+(branchMap[repo[indprev]]+1);
                                 branchMap[repo[indprev]]=branchMap[repo[indprev]]+1;
                                 id++;
+                                drawData[indmnext].repo = erepo;
+                                reponew[indmnext] = erepo;
                             }
                             
                          } 
@@ -370,10 +372,15 @@
                                 
                                 if(indprev == -1){ //end cid found
                                     fbfFlag = 2;
+                                    // if(repo[indmnext]!=repo[cid.indexOf(mnextmerge[indmnext])]){
+                                    //     temporderedrepo[id] = repo[indmnext].substring(0,repo[indmnext].length-1)+(branchMap[repo[indmnext]]+1);
+                                    //     branchMap[repo[indmnext]]=branchMap[repo[indmnext]]+1;
+                                    //     id++;
+                                    // }
                                     continue;
                                 }
                                 
-                                if(treemerges.indexOf(cid[indprev]) == -1){ //not a merge
+                                if(merges.indexOf(cid[indprev]) == -1){ //not a merge
                                     tflag[indprev] = 1;
                                     drawData[indprev].repo = temporderedrepo[id-1];
                                     reponew[indprev] = temporderedrepo[id-1];
@@ -386,14 +393,19 @@
                                     reponew[indprev] = temporderedrepo[id-1];
                                     indmnext = indprev; 
                                     indprev = mnext.indexOf(cid[indprev]);
+                                    if(repo[indprev]!=repo[indmnext]){ //move back in the same branch
+                                        indprev = mnext.indexOf(cid[indmnext],indprev+1);          
+                                    }
                                     continue;
                                 }
                          } 
                          
                          if (fbfFlag == 2){
-                                
+                                //fast forward
                                 console.log("indnext"+indmnext);
-                                if(tflag[indmnext==1]){
+                                if(tflag[indmnext]==1){
+                                    // drawData[indmnext].repo = temporderedrepo[id-1];
+                                    // reponew[indmnext] = temporderedrepo[id-1];
                                     indmnext = cid.indexOf(mnext[indmnext]);
                                     continue;
                                 }
