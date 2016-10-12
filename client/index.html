@@ -846,7 +846,7 @@
                             	.style("stroke-width", 1);
                             })
                         .attr("fill", function(d) {
-                            return colorScale(d.repo.substring(0,d.repo.length-2)); 
+                            return colorScale(repo[cid.indexOf(d.cid)].substring(0,repo[cid.indexOf(d.cid)].length-2)); 
                         })
                         .on("click", function (d){
                             window.open("https://github.com/torvalds/linux/commit/"+d.cid, '_blank');
