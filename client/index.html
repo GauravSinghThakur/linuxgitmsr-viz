@@ -780,7 +780,7 @@
                         })
                         .attr("r", 10)
                         .attr("stroke", function(d) { 
-                            return colorScale(d.repo.substring(0,d.repo.length-2)); 
+                            return colorScale(repo[cid.indexOf(d.cid)].substring(0,repo[cid.indexOf(d.cid)].length-2)); 
                         })
                         .attr("stroke-width", 1)
                         .attr("fill", "none")
@@ -797,7 +797,7 @@
                             })
                         .append("svg:title")
                         .text(function(d) {
-                            return "Commit ID: \t"+d.cid+"\nNext Commit: \t"+d.mnext+"\nNext Merge: \t"+d.mnextmerge+"\nCommit Date: \t"+d.comdate+"\nRepository: \t"+d.repo; 
+                            return "Commit ID: \t"+d.cid+"\nNext Commit: \t"+d.mnext+"\nNext Merge: \t"+d.mnextmerge+"\nCommit Date: \t"+d.comdate+"\nRepository: \t"+repo[cid.indexOf(d.cid)].substring(0,repo[cid.indexOf(d.cid)].length-2); 
                         });
                               
                         
