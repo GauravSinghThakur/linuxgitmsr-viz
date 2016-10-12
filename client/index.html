@@ -223,7 +223,7 @@
                 
                 cid[i] = mcidlinus[0];
                 repo[i] = "linus/linus  ";
-                reponew[i] = "linus/linus  "
+                reponew[i] = "linus/linus  ";
                 comdate[i] = mwhen[0];
                 var repos = repoOpp.unique().reverse();
                 repos[repos.length] = "linus/linus  ";
@@ -231,6 +231,57 @@
                 var merges = mnextmerge.unique();
                  
                 var erepo = repo[i-1];
+                
+                // function minDateErepo(){
+                //     var  k=0;
+                //     var len = repo.length;
+                //     var tempdates = [];
+                //     var id = 0;
+                //     var mindate;
+                    
+                //     while(k<len){
+                //         if(repo[k]==erepo){
+                //             tempdates[id] = comdate[k];
+                //         }
+                //     }
+                    
+                //     mindate=new Date(Math.min.apply(null,tempdates));
+                //     return mindate;
+                // }
+                
+                // var minDate = minDateErepo();
+                
+                function startCid(){
+                    var k = 0;
+                    var ecid;
+                    var flag=0;
+                    var len = repo.length;
+                    while(k<len){
+                        
+                        if(flag==0 && repo[k]==erepo){
+                            ecid = cid[k];
+                            flag=1;
+                        }
+                        
+                        if(repo[k]!=erepo){
+                            k++;
+                            continue;
+                        }else {
+                            var ind = mnext.indexOf[cid[k]];
+                            if(ind==-1){
+                                ecid = cid[k];
+                                break;
+                            }
+                            k++;
+                            continue;
+                        }
+                    }
+                   
+                    return ecid;
+                }
+                
+                var ecid = startCid();
+                console.log("eciddddddd: "+ecid);
                 
                 function getMerges(){
                     var k = 0;
@@ -245,48 +296,30 @@
                         }
                         k++;
                     }
+                    if(mnext.indexOf(ecid)!=-1){
+                        merge[ind] = ecid;        
+                    }
                     return merge;
                 }
                 
                 var treemerges = getMerges();
+                console.log("treeeeeee: "+treemerges);
                 
-                function startCid(){
-                    var k = 0;
-                    var ecid;
-                    while(true){
-                        if(repo[k]!=erepo){
-                            k++;
-                            continue;
-                        }else {
-                            var ind = mnext.indexOf[cid[k]];
-                            if(ind==-1){
-                                ecid = cid[k];
-                                break;
-                            }
-                            k++;
-                            continue;
-                        }
-                    }
-                    return ecid;
-                }
-                
-                var ecid = startCid();
-                
-                function sortedRepos(){
-                    var indecid = cid.indexOf(ecid);
-                    var indmnext = cid.indexOf(mnext[indecid]);
+                var repoOrder = function(){
+                    
+                    var indmnext = cid.indexOf(ecid);
                     var temporderedrepo = [];
                     var id=0;
                     var branchMap = {};
+                    branchMap[erepo] = 0;
                     var fbfFlag=1;
-                    var indmnextmerge;
                     var indprev;
                     var tflag=[];
-                    tflag[indecid]=1;
                     
                     var k=0;
                     while(k<repos.length){
                         branchMap[repos[k]] = 0;
+                        //console.log(branchMap);
                         k++;
                     }
                     k=0;
@@ -296,12 +329,14 @@
                         k++;
                     }
                     
-                    while(true){
+                    var i=0;
+                    while(cid[indmnext] != mcidlinus[0]){
                         
-                        if(cid[indmnext] == mcidlinus[0]){
-                            break;
-                        }
-                        
+                        console.log(i," prev"+indprev+" nextind: "+indmnext+" nextid: "+cid[indmnext]+" "+fbfFlag);
+                        i++;
+                        // if(i==30){
+                        //     break;
+                        // }
                         //moving forward until we find a merge in erepo
                         if(fbfFlag==1){
                             //no merge found
@@ -311,25 +346,30 @@
                                     reponew[indmnext] = erepo;
                                     drawData[indmnext].repo = erepo;
                                 }
+                                //console.log(indmnext);
                                 indmnext = cid.indexOf(mnext[indmnext]);
+                                //console.log(indmnext);
                                 continue;
                                 
                             }else { //found a merge
                                 fbfFlag = 0;
                                 indprev = mnext.indexOf(cid[indmnext]);
+                                //console.log("mnext"+indmnext,"prev"+indprev);
                                 if(tflag[indprev]==1){
-                                    indprev = mnext.indexOf(indmnext,indprev+1);          
+                                    indprev = mnext.indexOf(cid[indmnext],indprev+1);          
                                 }
+                                console.log(cid[indmnext],cid[indprev],repo[indprev],indprev);
                                 temporderedrepo[id] = repo[indprev].substring(0,repo[indprev].length-1)+(branchMap[repo[indprev]]+1);
                                 branchMap[repo[indprev]]=branchMap[repo[indprev]]+1;
                                 id++;
-                                continue;
                             }
                             
-                         } else if (fbfFlag==0){ //moving backwards until the end and adding repo branch
+                         } 
+                         
+                         if (fbfFlag==0){ //moving backwards until the end and adding repo branch
                                 
                                 if(indprev == -1){ //end cid found
-                                    fbfFlag == 2;
+                                    fbfFlag = 2;
                                     continue;
                                 }
                                 
@@ -348,46 +388,51 @@
                                     indprev = mnext.indexOf(cid[indprev]);
                                     continue;
                                 }
+                         } 
+                         
+                         if (fbfFlag == 2){
                                 
-                         } else if (fbfFlag == 2){
-                                
-                                indmnextmerge = mnextmerge[indmnext];
-                                
-                                if(reponew[indmnextmerge] == erepo){
-                                    tflag[indmnextmerge] = 1;
-                                    fbfFlag == 1;
-                                    indmnext = cid.indexOf(mnext[indmnextmerge]);
+                                console.log("indnext"+indmnext);
+                                if(tflag[indmnext==1]){
+                                    indmnext = cid.indexOf(mnext[indmnext]);
                                     continue;
                                 }
                                 
-                                if(tflag[indmnextmerge]==1){
-                                    indmnext = indmnextmerge;
-                                    continue;  
-                                    
-                                } else{ //merge found, time to traverse its other branch
-                                    tflag[indmnextmerge] = 1;
+                                if(reponew[indmnext] == erepo){
+                                    tflag[indmnext] = 1;
+                                    fbfFlag = 1;
+                                    indmnext = cid.indexOf(mnext[indmnext]);
+                                    continue;
+                                }
+                                
+                                if(treemerges.indexOf(cid[indmnext]!=-1) && tflag[indmnext]==0) { //merge found, time to traverse its other branch
+                                    tflag[indmnext] = 1;
                                     fbfFlag = 0;
                                     indprev = mnext.indexOf(cid[indmnext]);
+                                    console.log("inside flag2 merge"+cid[indprev]+" "+indprev);
                                     if(tflag[indprev]==1){
-                                        indprev = mnext.indexOf(indmnext,indprev+1);          
+                                        indprev = mnext.indexOf(cid[indmnext],indprev+1);          
                                     }
+                                    console.log("indprev"+indprev);
                                     temporderedrepo[id] = repo[indprev].substring(0,repo[indprev].length-1)+(branchMap[repo[indprev]]+1);
                                     branchMap[repo[indprev]]=branchMap[repo[indprev]]+1;
                                     id++;
-                                    continue;
-                                }       
+                                }
+                                indmnext = cid.indexOf(mnext[indmnext]);
+                                
                          }        
-                        
+                       
                     }
                     
                     return temporderedrepo;
-                }
+                };
                 
-                var temporderedrepos = sortedRepos();
+                var temporderedrepos = repoOrder();
                 var orderedrepos = temporderedrepos.reverse();
                 
                 orderedrepos[orderedrepos.length]=erepo;
                 orderedrepos[orderedrepos.length]="linus/linus  ";
+                
                 
                 //var orderedrepos = repos;
                 
@@ -489,6 +534,7 @@
                 // sortedecids = sortErepocid();
                 
                 // console.log(reponew);
+                
                 // var repoOrder = function() {
                 //     var orderedrepo = [];
                 //     var oid = 0;
@@ -581,7 +627,14 @@
                 //     }
                 //         console.log(sortedecids, branchMap, reponew);
                 //         return orderedrepo;
-                // };                
+                // };    
+                
+                
+                // var temporderedrepos = repoOrder();
+                // var orderedrepos = temporderedrepos.reverse();
+                
+                // orderedrepos[orderedrepos.length]=erepo;
+                // orderedrepos[orderedrepos.length]="linus/linus  ";
                 
                 
                 $scope.cid = cid;
