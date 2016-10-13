@@ -372,11 +372,7 @@
                                 
                                 if(indprev == -1){ //end cid found
                                     fbfFlag = 2;
-                                    // if(repo[indmnext]!=repo[cid.indexOf(mnextmerge[indmnext])]){
-                                    //     temporderedrepo[id] = repo[indmnext].substring(0,repo[indmnext].length-1)+(branchMap[repo[indmnext]]+1);
-                                    //     branchMap[repo[indmnext]]=branchMap[repo[indmnext]]+1;
-                                    //     id++;
-                                    // }
+                                    
                                     continue;
                                 }
                                 
@@ -389,6 +385,11 @@
                                     continue;
                                     
                                 } else { // merge found
+                                    if(repo[indprev].substring(0,repo[indprev].length-1)!=temporderedrepo[id-1].substring(0,temporderedrepo[id-1].length-1)){
+                                        temporderedrepo[id] = repo[indprev].substring(0,repo[indprev].length-1)+(branchMap[repo[indprev]]+1);
+                                        branchMap[repo[indprev]]=branchMap[repo[indprev]]+1;
+                                        id++;
+                                    }
                                     drawData[indprev].repo = temporderedrepo[id-1];
                                     reponew[indprev] = temporderedrepo[id-1];
                                     indmnext = indprev; 
