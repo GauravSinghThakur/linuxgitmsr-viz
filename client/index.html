@@ -329,7 +329,7 @@
                         k++;
                     }
                     
-                    var i=0;
+                    var i=0; //id 433
                     while(cid[indmnext] != mcidlinus[0]){
                         
                         console.log(i," prev"+indprev+" nextind: "+indmnext+" nextid: "+cid[indmnext]+" "+fbfFlag);
@@ -427,9 +427,13 @@
                                         indprev = mnext.indexOf(cid[indmnext],indprev+1);          
                                     }
                                     console.log("indprev"+indprev);
-                                    temporderedrepo[id] = repo[indprev].substring(0,repo[indprev].length-1)+(branchMap[repo[indprev]]+1);
-                                    branchMap[repo[indprev]]=branchMap[repo[indprev]]+1;
-                                    id++;
+                                    if(indprev != -1){
+                                        temporderedrepo[id] = repo[indprev].substring(0,repo[indprev].length-1)+(branchMap[repo[indprev]]+1);
+                                        branchMap[repo[indprev]]=branchMap[repo[indprev]]+1;
+                                        id++;
+                                    } else {
+                                        fbfFlag = 2;
+                                    }
                                 }
                                 indmnext = cid.indexOf(mnext[indmnext]);
                                 
