@@ -233,7 +233,7 @@
                 
                 authors[authors.length] = "Linus Torvalds";
                 repos[repos.length] = "linus/linus  ";
-                var comdates = comdate.unique();
+                var comdates = comdate.unique().sort();
                 var merges = mnextmerge.unique();
                  
                 var erepo = repo[i-1];
@@ -267,17 +267,23 @@
                     }
                     
                     ji=0;
-                    var tempDates = [];
-                    while(ji<comdate.length){
-                        if(tempDates.indexOf(comdate[ji])==-1){
-                            jitterMap[ji] = 0;        
+                    jitterMap[comdate.indexOf(comdates[0])] = 0;
+                    //var tempDates = [];
+                    while(ji<comdates.length){
+                        var index2 = comdate.indexOf(comdates[ji+1]);
+                        var index1 = comdate.indexOf(comdates[ji]);
+                        if(parseInt((comdates[ji]-comdates[ji+1])/1000) < 1 && repo[index2]==repo[index1]){
+                            jitterMap[index2] = jitterMap[index1]-0.25;
                         } else{
-                            jitterMap[ji] = 10;
-                            console.log('jiterrrrrrrrrrrrrr '+jitterMap[ji]);
+                            jitterMap[index2] = 0;
                         }
-                        tempDates[ji] = comdate[ji];
+                        //tempDates[ji] = comdate[ji];
                         ji++;
                     }
+                    
+                    ji=0;
+                    while(ji<comdate.length){ console.log('jiterrrrrrrrrrrrrr '+jitterMap[ji]); ji++;}
+                    
                     console.log('differenceeee:'+comdates.length,comdate.length);
                     
                     
@@ -706,7 +712,7 @@
                     
                     var outerWidth = 2000;
                       var outerHeight = 1000;
-                      var margin = { left: 350, top: 20, right: 350, bottom: 20 };
+                      var margin = { left: 350, top: 20, right: 350, bottom: 100 };
                 
                       var xAxisLabelText = "Commit Time";
                       var xAxisLabelOffset = 80;
