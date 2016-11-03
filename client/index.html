@@ -257,6 +257,31 @@
                 
                 // var minDate = minDateErepo();
                 
+                // Adding jitter to commits that occur at the same time
+                 var jitterMap = {};
+                 var ji=0;
+                    while(ji<comdate.length){
+                        jitterMap[ji] = 0;
+                        //console.log(jitterMap);
+                        ji++;
+                    }
+                    
+                    ji=0;
+                    var tempDates = [];
+                    while(ji<comdate.length){
+                        if(tempDates.indexOf(comdate[ji])==-1){
+                            jitterMap[ji] = 0;        
+                        } else{
+                            jitterMap[ji] = 10;
+                            console.log('jiterrrrrrrrrrrrrr '+jitterMap[ji]);
+                        }
+                        tempDates[ji] = comdate[ji];
+                        ji++;
+                    }
+                    console.log('differenceeee:'+comdates.length,comdate.length);
+                    
+                    
+                
                 function startCid(){
                     var k = 0;
                     var ecid;
@@ -813,9 +838,9 @@
                                 return -100;
                             }
                         })
-                        .attr("cy", function(d) { 
+                        .attr("cy", function(d,i) { 
                             if (merges.indexOf(d.cid)==-1) { 
-                                return yScale(orderedrepos.indexOf(d.repo)+1);
+                                return yScale(orderedrepos.indexOf(d.repo)+1)+jitterMap[i];
                                 
                             } else{
                                 return -100;
@@ -858,9 +883,9 @@
                                 return -100;
                             }
                         })
-                        .attr("y", function(d) {
+                        .attr("y", function(d,i) {
                             if (merges.indexOf(d.cid)!=-1) {
-                                return yScale(orderedrepos.indexOf(d.repo)+1);
+                                return yScale(orderedrepos.indexOf(d.repo)+1)+jitterMap[i];
                                 
                             } else{
                                 return -100;
@@ -960,9 +985,9 @@
                                     return -100;
                                 }
                              })
-                             .attr("cy", function(d) { 
+                             .attr("cy", function(d,i) { 
                                 if (merges.indexOf(d.cid)==-1) { 
-                                    return yScale(orderedrepos.indexOf(d.repo)+1);
+                                    return yScale(orderedrepos.indexOf(d.repo)+1)+jitterMap[i];
                                     
                                 } else{
                                     return -100;
@@ -979,9 +1004,9 @@
                                     return -100;
                                 }
                             })
-                            .attr("y", function(d) {
+                            .attr("y", function(d,i) {
                                 if (merges.indexOf(d.cid)!=-1) {
-                                    return yScale(orderedrepos.indexOf(d.repo)+1);
+                                    return yScale(orderedrepos.indexOf(d.repo)+1)+jitterMap[i];
                                     
                                 } else{
                                     return -100;
