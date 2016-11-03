@@ -60,7 +60,7 @@
         <br><br><br>
         
         <div class="table-title">
-            <br>
+            <br></br><br></br><br></br><br></br>
             <h2>Linux Repo Commits(2012)</h4>
         </div>
         <table class="table-fill">
@@ -786,7 +786,7 @@
                             .domain(authors);
                       
                       var xAxis = d3.svg.axis().scale(xScale).orient("bottom")
-                        .ticks(6)
+                        .ticks(5)
                         //.tickFormat()
                         .outerTickSize(0);
                         
@@ -810,12 +810,12 @@
                       legend.append("circle")
                           .attr("r", 4)
                           .attr("cx", outerWidth - 300)
-                          .attr("cy", "0.75em")
+                          .attr("cy", "0.5em")
                           .attr("fill", authorcolorScale);
                     
                       legend.append("text")
                           .attr("x", outerWidth - 294)
-                          .attr("dy", "1em")
+                          .attr("dy", "0.75em")
                           .text(function(d) { return d; });
                     
                     //  no  var comLen = comdate.length;
@@ -968,7 +968,7 @@
                    
                      var zoom = d3.behavior.zoom()
                                   .x(xScale)
-                                  .y(yScale)
+                                  //.y(yScale)
                                   .scaleExtent([0.1, 1000000])
                                   .on("zoom", draw);
                      
@@ -979,7 +979,7 @@
                      
                      function draw() {
                             svg.select("g.x.axis").call(xAxis);
-                            svg.select("g.y.axis").call(yAxis);
+                            //svg.select("g.y.axis").call(yAxis);
                             
                             var circles =  g.select("#figure").selectAll("circle");
                               circles
@@ -990,14 +990,14 @@
                                 } else{
                                     return -100;
                                 }
-                             })
-                             .attr("cy", function(d,i) { 
-                                if (merges.indexOf(d.cid)==-1) { 
-                                    return yScale(orderedrepos.indexOf(d.repo)+1)+jitterMap[i];
+                            //  })
+                            //  .attr("cy", function(d,i) { 
+                            //     if (merges.indexOf(d.cid)==-1) { 
+                            //         return yScale(orderedrepos.indexOf(d.repo)+1)+jitterMap[i];
                                     
-                                } else{
-                                    return -100;
-                                } 
+                            //     } else{
+                            //         return -100;
+                            //     } 
                              });
                              
                             var rectangles =  g.select("#figure").selectAll("rect");
@@ -1009,14 +1009,14 @@
                                 } else{
                                     return -100;
                                 }
-                            })
-                            .attr("y", function(d,i) {
-                                if (merges.indexOf(d.cid)!=-1) {
-                                    return yScale(orderedrepos.indexOf(d.repo)+1)+jitterMap[i];
+                            // })
+                            // .attr("y", function(d,i) {
+                            //     if (merges.indexOf(d.cid)!=-1) {
+                            //         return yScale(orderedrepos.indexOf(d.repo)+1)+jitterMap[i];
                                     
-                                } else{
-                                    return -100;
-                                }
+                            //     } else{
+                            //         return -100;
+                            //     }
                             });
                             
                              var lines =  g.select("#figure").selectAll("line");
@@ -1024,9 +1024,9 @@
                              .attr("x1", function(d) {
                                  return xScale(d.comdate); 
                              })
-                             .attr("y1", function(d){
-                                return yScale(orderedrepos.indexOf(d.repo)+1);
-                            })
+                            //  .attr("y1", function(d){
+                            //     return yScale(orderedrepos.indexOf(d.repo)+1);
+                            // })
                              .attr("x2", function(d){
                                  if(d.mnext==""){
                                      return 0;
@@ -1034,14 +1034,14 @@
                                  } else {
                                      return xScale(comdate[cid.indexOf(d.mnext)]);
                                  }
-                             })
-                            .attr("y2", function(d){
-                                if(d.mnext==""){
-                                    return yScale(orderedrepos.indexOf("linus/linus  ")+1); 
+                            //  })
+                            // .attr("y2", function(d){
+                            //     if(d.mnext==""){
+                            //         return yScale(orderedrepos.indexOf("linus/linus  ")+1); 
                                     
-                                } else { 
-                                    return yScale(orderedrepos.indexOf(reponew[cid.indexOf(d.mnext)])+1);
-                                }
+                            //     } else { 
+                            //         return yScale(orderedrepos.indexOf(reponew[cid.indexOf(d.mnext)])+1);
+                            //     }
                             });
                             
                             // svg.select("path.area").attr("d", area);
