@@ -229,6 +229,9 @@
                 reponew[i] = "linus/linus  ";
                 comdate[i] = mwhen[0];
                 var repos = repoOpp.unique().reverse();
+                var authors = author.unique();
+                
+                authors[authors.length] = "Linus Torvalds";
                 repos[repos.length] = "linus/linus  ";
                 var comdates = comdate.unique();
                 var merges = mnextmerge.unique();
@@ -676,9 +679,9 @@
                 // D3 library is used.
                 $scope.tree = function (scope, element, attrs){
                     
-                    var outerWidth = 1500;
-                      var outerHeight = 900;
-                      var margin = { left: 350, top: 20, right: 20, bottom: 100 };
+                    var outerWidth = 2000;
+                      var outerHeight = 1000;
+                      var margin = { left: 350, top: 20, right: 350, bottom: 20 };
                 
                       var xAxisLabelText = "Commit Time";
                       var xAxisLabelOffset = 80;
@@ -745,9 +748,11 @@
                         .domain([0,yDom().length+1])
                         .range([0, innerHeight]);
                       
-                      var repocolorScale = d3.scale.category20();
+                      var repocolorScale = d3.scale.category20()
+                            .domain(repos);
                       
-                      var authorcolorScale = d3.scale.category20();
+                      var authorcolorScale = d3.scale.category20()
+                            .domain(authors);
                       
                       var xAxis = d3.svg.axis().scale(xScale).orient("bottom")
                         .ticks(6)
@@ -764,6 +769,23 @@
                       xAxisG.call(xAxis);
                       yAxisG.attr('clip-path', 'url(#clip-y-axis)')
                             .call(yAxis);
+                            
+                    var legend = svg.selectAll(".legend")
+                          .data(authorcolorScale.domain())
+                          .enter().append("g")
+                          .classed("legend", true)
+                          .attr("transform", function(d, i) { return "translate(" + 0 + "," + i * 20 + ")"; }); //translate(0," + i * 20 + ")"; });
+                    
+                      legend.append("circle")
+                          .attr("r", 4)
+                          .attr("cx", outerWidth - 300)
+                          .attr("cy", "0.75em")
+                          .attr("fill", authorcolorScale);
+                    
+                      legend.append("text")
+                          .attr("x", outerWidth - 294)
+                          .attr("dy", "1em")
+                          .text(function(d) { return d; });
                     
                     //  no  var comLen = comdate.length;
                     //   var k = 0, l=0, nextInd=1;
