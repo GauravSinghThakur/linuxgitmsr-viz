@@ -7,7 +7,6 @@
     <link href="Content/styles.css" rel="stylesheet" />
     <link href="Content/table.css" rel="stylesheet" />
     
-    
 </head>
 <body ng-view>
     <h2>
@@ -194,6 +193,8 @@
                 var mcidlinus = [];
                 var mnextmerge = [];
                 var mnext = [];
+                var author = [];
+                var autdate = [];
                 var i = 0;
                 var len = mcid.length-1;
                 var repoOpp = [];
@@ -202,7 +203,7 @@
                 
                 while (mcid[i]){
                     
-                    drawData.push({cid: mcid[i].cid, mnext: mcid[i].mnext, mnextmerge: mcid[i].mnextmerge, repo: mcid[i].repo+"  ", comdate: new Date(mcid[i].comdate)});
+                    drawData.push({cid: mcid[i].cid, mnext: mcid[i].mnext, mnextmerge: mcid[i].mnextmerge, repo: mcid[i].repo+"  ", comdate: new Date(mcid[i].comdate), author: mcid[i].author, autdate: new Date(mcid[i].autdate)});
                     
                     mnextmerge[i] = mcid[i].mnextmerge;
                     mnext[i] = mcid[i].mnext;
@@ -210,6 +211,8 @@
                     repo[i] = mcid[i].repo+"  ";
                     reponew[i] = mcid[i].repo+"  ";
                     comdate[i] = new Date(mcid[i].comdate);
+                    author[i] = mcid[i].author;
+                    autdate[i] = new Date(mcid[i].autdate);
                     if(i==0){
                         mcidlinus[0] = mcid[i].mcidlinus;
                         mwhen[0] = new Date(mcid[i].mwhen);
@@ -219,7 +222,7 @@
                     i++;
                 }
                 
-                drawData.push({cid: mcidlinus[0], mnext: "", mnextmerge: "", repo: "linus/linus  ", comdate:  mwhen[0]});
+                drawData.push({cid: mcidlinus[0], mnext: "", mnextmerge: "", repo: "linus/linus  ", comdate:  mwhen[0], author: "Linus Torvalds", autdate: mwhen[0]});
                 
                 cid[i] = mcidlinus[0];
                 repo[i] = "linus/linus  ";
@@ -372,7 +375,6 @@
                                 
                                 if(indprev == -1){ //end cid found
                                     fbfFlag = 2;
-                                    
                                     continue;
                                 }
                                 
@@ -743,7 +745,9 @@
                         .domain([0,yDom().length+1])
                         .range([0, innerHeight]);
                       
-                      var colorScale = d3.scale.category20();
+                      var repocolorScale = d3.scale.category20();
+                      
+                      var authorcolorScale = d3.scale.category20();
                       
                       var xAxis = d3.svg.axis().scale(xScale).orient("bottom")
                         .ticks(6)
@@ -797,10 +801,12 @@
                         })
                         .attr("r", 10)
                         .attr("stroke", function(d) { 
-                            return colorScale(repo[cid.indexOf(d.cid)].substring(0,repo[cid.indexOf(d.cid)].length-2)); 
+                            return repocolorScale(repo[cid.indexOf(d.cid)].substring(0,repo[cid.indexOf(d.cid)].length-2)); 
                         })
-                        .attr("stroke-width", 1)
-                        .attr("fill", "none")
+                        .attr("stroke-width", 3)
+                        .attr("fill", function(d) { 
+                            return authorcolorScale(d.author); 
+                        })
                         .on("click", function (d){
                             window.open("https://github.com/torvalds/linux/commit/"+d.cid, '_blank');
                          })
@@ -810,11 +816,11 @@
                             })
                         .on("mouseout", function (d) {                                  
                           		d3.select(this)                          
-                            	.style("stroke-width", 1);
+                            	.style("stroke-width", 3);
                             })
                         .append("svg:title")
                         .text(function(d) {
-                            return "Commit ID: \t"+d.cid+"\nNext Commit: \t"+d.mnext+"\nNext Merge: \t"+d.mnextmerge+"\nCommit Date: \t"+d.comdate+"\nRepository: \t"+repo[cid.indexOf(d.cid)].substring(0,repo[cid.indexOf(d.cid)].length-2); 
+                            return "Author: \t\t"+d.author+"\nAutDate: \t\t"+d.autdate+"\nCommit ID: \t"+d.cid+"\nNext Commit: \t"+d.mnext+"\nNext Merge: \t"+d.mnextmerge+"\nCommit Date: \t"+d.comdate+"\nRepository: \t"+repo[cid.indexOf(d.cid)].substring(0,repo[cid.indexOf(d.cid)].length-2); 
                         });
                               
                         
@@ -840,25 +846,27 @@
                         })
                         .attr("width", 20)
                         .attr("height", 20)
-                        .attr("stroke", "black")
-                        .attr("stroke-width", 1)
+                        .attr("stroke", function(d) { 
+                            return repocolorScale(repo[cid.indexOf(d.cid)].substring(0,repo[cid.indexOf(d.cid)].length-2)); 
+                        })
+                        .attr("stroke-width", 3)
+                        .attr("fill", function(d) { 
+                            return authorcolorScale(d.author); 
+                        })
                         .on("mouseover", function (d) {                                  
                           		d3.select(this)                          
                             	.style("stroke-width", 6);
                             })
                         .on("mouseout", function (d) {                                  
                           		d3.select(this)                          
-                            	.style("stroke-width", 1);
+                            	.style("stroke-width", 3);
                             })
-                        .attr("fill", function(d) {
-                            return colorScale(repo[cid.indexOf(d.cid)].substring(0,repo[cid.indexOf(d.cid)].length-2)); 
-                        })
                         .on("click", function (d){
                             window.open("https://github.com/torvalds/linux/commit/"+d.cid, '_blank');
                          })
                         .append("svg:title")
                         .text(function(d) {
-                            return "Commit ID: \t"+d.cid+"\nNext Commit: \t"+d.mnext+"\nNext Merge: \t"+d.mnextmerge+"\nCommit Date: \t"+d.comdate+"\nRepository: \t"+d.repo;
+                            return "Author: \t\t"+d.author+"\nAutDate: \t\t"+d.autdate+"\nCommit ID: \t"+d.cid+"\nNext Commit: \t"+d.mnext+"\nNext Merge: \t"+d.mnextmerge+"\nCommit Date: \t"+d.comdate+"\nRepository: \t"+repo[cid.indexOf(d.cid)].substring(0,repo[cid.indexOf(d.cid)].length-2);
                         });
                         
                         
@@ -889,7 +897,7 @@
                                 }
                             })
                             .attr("stroke", function(d) {
-                                return colorScale(d.repo.substring(0,d.repo.length-2));
+                                return repocolorScale(d.repo.substring(0,d.repo.length-2));
                             })
                             .attr("stroke-width", 3)
                             .on("mouseover", function (d) {                                  
