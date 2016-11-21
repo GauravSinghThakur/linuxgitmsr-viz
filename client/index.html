@@ -49,7 +49,7 @@
                         <label>From:</label>
                         <input type='text' placeholder='2012-01-01' ng-model='fromdate'/>  
                         <label>To:</label>
-                        <input type='text' value='2012-12-31' ng-model='todate'/>
+                        <input type='text' placeholder='2012-12-31' ng-model='todate'/>
                     
                    
                 </h4>
@@ -238,25 +238,7 @@
                  
                 var erepo = repo[i-1];
                 
-                // function minDateErepo(){
-                //     var  k=0;
-                //     var len = repo.length;
-                //     var tempdates = [];
-                //     var id = 0;
-                //     var mindate;
-                    
-                //     while(k<len){
-                //         if(repo[k]==erepo){
-                //             tempdates[id] = comdate[k];
-                //         }
-                //     }
-                    
-                //     mindate=new Date(Math.min.apply(null,tempdates));
-                //     return mindate;
-                // }
-                
-                // var minDate = minDateErepo();
-                
+      
                 // Adding jitter to commits that occur at the same time
                  var jitterMap = {};
                  var ji=0;
@@ -281,10 +263,15 @@
                         ji++;
                     }
                     
-                    ji=0;
-                    while(ji<comdate.length){ console.log('jiterrrrrrrrrrrrrr '+jitterMap[ji]); ji++;}
+                    //ji=0;
+                    // while(ji<comdate.length)
+                    // { 
+                    //     console.log('jiterrrrrrrrrrrrrr '+jitterMap[ji]); 
+                    //     ji++;
+                        
+                    // }
                     
-                    console.log('differenceeee:'+comdates.length,comdate.length);
+                    // console.log('differenceeee:'+comdates.length,comdate.length);
                     
                     
                 
@@ -324,6 +311,13 @@
                     var k = 0;
                     var ind = 0;
                     var merge = [];
+                    
+                    if(merges.length < 2){
+                        
+                        merges[0] = ecid;
+                        merge[0] = ecid;
+                    }
+                    
                     while(k<merges.length){
                         var firstind = mnext.indexOf(merges[k]);
                         var secind = mnext.indexOf(merges[k],firstind+1);
@@ -369,8 +363,8 @@
                     var i=0; //id 433
                     while(cid[indmnext] != mcidlinus[0]){
                         
-                        console.log(i," prev"+indprev+" nextind: "+indmnext+" nextid: "+cid[indmnext]+" "+fbfFlag);
-                        i++;
+                        // console.log(i," prev"+indprev+" nextind: "+indmnext+" nextid: "+cid[indmnext]+" "+fbfFlag);
+                        // i++;
                         // if(i==30){
                         //     break;
                         // }
@@ -395,12 +389,14 @@
                                 if(tflag[indprev]==1){
                                     indprev = mnext.indexOf(cid[indmnext],indprev+1);          
                                 }
-                                console.log(cid[indmnext],cid[indprev],repo[indprev],indprev);
-                                temporderedrepo[id] = repo[indprev].substring(0,repo[indprev].length-1)+(branchMap[repo[indprev]]+1);
-                                branchMap[repo[indprev]]=branchMap[repo[indprev]]+1;
-                                id++;
-                                drawData[indmnext].repo = erepo;
-                                reponew[indmnext] = erepo;
+                                // console.log(cid[indmnext],cid[indprev],repo[indprev],indprev);
+                                if(indprev != -1){
+                                    temporderedrepo[id] = repo[indprev].substring(0,repo[indprev].length-1)+(branchMap[repo[indprev]]+1);
+                                    branchMap[repo[indprev]]=branchMap[repo[indprev]]+1;
+                                    id++;
+                                    drawData[indmnext].repo = erepo;
+                                    reponew[indmnext] = erepo;
+                                }
                             }
                             
                          } 
@@ -439,7 +435,7 @@
                          
                          if (fbfFlag == 2){
                                 //fast forward
-                                console.log("indnext"+indmnext);
+                                // console.log("indnext"+indmnext);
                                 if(tflag[indmnext]==1){
                                     // drawData[indmnext].repo = temporderedrepo[id-1];
                                     // reponew[indmnext] = temporderedrepo[id-1];
@@ -458,11 +454,11 @@
                                     tflag[indmnext] = 1;
                                     fbfFlag = 0;
                                     indprev = mnext.indexOf(cid[indmnext]);
-                                    console.log("inside flag2 merge"+cid[indprev]+" "+indprev);
+                                    // console.log("inside flag2 merge"+cid[indprev]+" "+indprev);
                                     if(tflag[indprev]==1){
                                         indprev = mnext.indexOf(cid[indmnext],indprev+1);          
                                     }
-                                    console.log("indprev"+indprev);
+                                    // console.log("indprev"+indprev);
                                     if(indprev != -1){
                                         temporderedrepo[id] = repo[indprev].substring(0,repo[indprev].length-1)+(branchMap[repo[indprev]]+1);
                                         branchMap[repo[indprev]]=branchMap[repo[indprev]]+1;
@@ -856,7 +852,7 @@
                         .attr("stroke", function(d) { 
                             return repocolorScale(repo[cid.indexOf(d.cid)].substring(0,repo[cid.indexOf(d.cid)].length-2)); 
                         })
-                        .attr("stroke-width", 3)
+                        .attr("stroke-width", 1.5)
                         .attr("fill", function(d) { 
                             return authorcolorScale(d.author); 
                         })
@@ -869,7 +865,7 @@
                             })
                         .on("mouseout", function (d) {                                  
                           		d3.select(this)                          
-                            	.style("stroke-width", 3);
+                            	.style("stroke-width", 1.5);
                             })
                         .append("svg:title")
                         .text(function(d) {
@@ -902,7 +898,7 @@
                         .attr("stroke", function(d) { 
                             return repocolorScale(repo[cid.indexOf(d.cid)].substring(0,repo[cid.indexOf(d.cid)].length-2)); 
                         })
-                        .attr("stroke-width", 3)
+                        .attr("stroke-width", 1.5)
                         .attr("fill", function(d) { 
                             return authorcolorScale(d.author); 
                         })
@@ -912,7 +908,7 @@
                             })
                         .on("mouseout", function (d) {                                  
                           		d3.select(this)                          
-                            	.style("stroke-width", 3);
+                            	.style("stroke-width", 1.5);
                             })
                         .on("click", function (d){
                             window.open("https://github.com/torvalds/linux/commit/"+d.cid, '_blank');
@@ -1047,7 +1043,7 @@
                             // svg.select("path.area").attr("d", area);
                             // svg.select("path.line").attr("d", line);
                             //console.log(drawData[2].repo+"\n\n"+ecids+"...\n"+sortedecids+"...\n"+emergedates+"...\n"+sortedemergedates+"...\n"+erepo+"...\n"+ecids.length+"..."+sortedemergedates.length+"...\n"+repos+"...\n"+orderedrepos);                    
-                            console.log(reponew+"\n\n"+repo+"\n\n"+orderedrepos);
+                            //console.log(reponew+"\n\n"+repo+"\n\n"+orderedrepos);
                      }        
                                 
              };
