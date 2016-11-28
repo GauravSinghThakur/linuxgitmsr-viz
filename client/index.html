@@ -314,8 +314,9 @@
                     
                     if(merges.length < 2){
                         
-                        merges[0] = ecid;
-                        merge[0] = ecid;
+                        merges[1] = ecid;
+                        merge[0] = mcidlinus;
+                        merge[1] = ecid;
                     }
                     
                     while(k<merges.length){
@@ -360,7 +361,7 @@
                         k++;
                     }
                     
-                    var i=0; //id 433
+                    //var i=0; //id 433
                     while(cid[indmnext] != mcidlinus[0]){
                         
                         // console.log(i," prev"+indprev+" nextind: "+indmnext+" nextid: "+cid[indmnext]+" "+fbfFlag);
